@@ -10,13 +10,14 @@ import java.util.Set;
 @Entity
 @Table(name = "users", indexes = {
         @Index(name = "idx_user_id", columnList = "id"),
-        @Index(name = "idx_user_username", columnList = "usename")
+        @Index(name = "idx_user_username", columnList = "username")
 })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
+    @Column(unique = true)
     String username;
     String password;
 
@@ -25,5 +26,4 @@ public class User {
 
     LocalDateTime created;
     LocalDateTime modified;
-
 }

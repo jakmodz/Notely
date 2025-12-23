@@ -1,3 +1,6 @@
 spring:
   application:
     name: backend
+jwt:
+  secret: haslomaslo1
+  expiration: 3600

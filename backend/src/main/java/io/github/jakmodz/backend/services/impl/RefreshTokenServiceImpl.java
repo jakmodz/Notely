@@ -7,6 +7,8 @@ import io.github.jakmodz.backend.repositories.RefreshTokenRepository;
 import io.github.jakmodz.backend.services.RefreshTokenService;
 import io.github.jakmodz.backend.services.UserService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Value("${jwt.refresh-expiration}")
     private Long refreshTokenDuration;
 
+    private final Logger logger = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
+
     @Autowired
     public RefreshTokenServiceImpl(JwtService jwtService, UserService userService, RefreshTokenRepository repository) {
         this.jwtService = jwtService;
@@ -32,6 +36,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public String createRefreshToken(String username) {
+
         User user = userService.getUserByUsername(username);
         repository.findByUser(user).ifPresent(repository::delete);
         RefreshToken refreshToken = new RefreshToken();
@@ -39,6 +44,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDuration));
         refreshToken.setToken(jwtService.generateRefreshToken(username));
         repository.save(refreshToken);
+        logger.info("Created refresh token: {}", refreshToken);
         return refreshToken.getToken();
     }
 
@@ -62,5 +68,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public void deleteByUserId(Long userId) {
         User user = userService.getUserById(userId);
         repository.deleteByUser(user);
+        logger.info("User {} has been deleted", userId);
     }
 }

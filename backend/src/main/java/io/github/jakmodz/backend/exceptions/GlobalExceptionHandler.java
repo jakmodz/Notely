@@ -1,6 +1,4 @@
 package io.github.jakmodz.backend.exceptions;
-
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,5 +20,16 @@ public class GlobalExceptionHandler {
                 request.getDescription(false).replace("uri=","")
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+    @ExceptionHandler(ExpiredRefreshToken.class)
+    public ResponseEntity<ErrorResponse> handleExpiredRefreshToken(ExpiredRefreshToken e, WebRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.toString(),
+                e.getMessage(),
+                request.getDescription(false).replace("uri=","")
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

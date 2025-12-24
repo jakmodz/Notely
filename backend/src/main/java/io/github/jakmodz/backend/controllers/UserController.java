@@ -1,10 +1,9 @@
 package io.github.jakmodz.backend.controllers;
 
 import io.github.jakmodz.backend.dtos.UserDto;
+import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
-import io.github.jakmodz.backend.repositories.UserRepository;
 import io.github.jakmodz.backend.services.RefreshTokenService;
-import io.github.jakmodz.backend.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,7 @@ public class UserController {
     private Long refreshTokenDuration;
     private final UserServiceImpl userService;
     private final JwtService jwtService;
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     @Autowired
      UserController(UserServiceImpl userService, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
@@ -59,7 +58,7 @@ public class UserController {
             setRefreshTokenCookie(response, newRefresh);
             return ResponseEntity.ok(newJwt);
         } else {
-            return ResponseEntity.status(401).build();
+            throw new ExpiredRefreshToken("Refresh token is expired or invalid");
         }
     }
     @PostMapping("/logout")

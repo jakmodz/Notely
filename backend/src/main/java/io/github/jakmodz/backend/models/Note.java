@@ -19,7 +19,7 @@ public class Note {
     String title;
     String content;
 
-    @OneToMany
+    @ManyToOne
     User userId;
 
     LocalDateTime created;

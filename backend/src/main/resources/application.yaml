@@ -4,5 +4,5 @@ spring:
   profiles:
     active: dev
 jwt:
-  secret: haslomaslo1
+  secret: haslomaslo11231231133131331232131312312312312312
   expiration: 3600

@@ -5,12 +5,10 @@ import io.github.jakmodz.backend.services.UserService;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/auth")
 public class UserController {
     private final UserServiceImpl userService;
 
@@ -24,4 +22,7 @@ public class UserController {
         userService.registerUser(user);
         return ResponseEntity.ok().build();
     }
+
+
+
 }

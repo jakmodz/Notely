@@ -1,6 +1,8 @@
 spring:
   application:
     name: backend
+  profiles:
+    active: dev
 jwt:
   secret: haslomaslo1
   expiration: 3600

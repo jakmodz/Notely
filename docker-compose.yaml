@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: notely_user
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_DB: notely_db
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+volumes:
+  db_data:

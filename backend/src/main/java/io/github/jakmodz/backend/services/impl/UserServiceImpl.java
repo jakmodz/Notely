@@ -2,7 +2,6 @@ package io.github.jakmodz.backend.services.impl;
 
 import io.github.jakmodz.backend.dtos.UserDto;
 import io.github.jakmodz.backend.exceptions.UsernameAlreadyTaken;
-import io.github.jakmodz.backend.jwt.JwtUtil;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.repositories.UserRepository;
 import io.github.jakmodz.backend.services.UserService;
@@ -36,5 +35,10 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(password);
 
         userRepository.save(newUser);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

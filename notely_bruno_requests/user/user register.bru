@@ -6,10 +6,18 @@ meta {
 
 post {
   url: 127.0.0.1:8080/register
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "username": "warkusz",
+    "password": "1234444"
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

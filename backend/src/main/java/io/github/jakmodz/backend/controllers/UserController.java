@@ -6,6 +6,7 @@ import io.github.jakmodz.backend.jwt.JwtService;
 import io.github.jakmodz.backend.services.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@RequestBody UserDto user) {
+    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserDto user) {
         userService.registerUser(user);
         return ResponseEntity.ok().build();
     }

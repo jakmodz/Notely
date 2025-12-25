@@ -4,7 +4,6 @@ spring:
         username: notely_user
         password: secure_password
         driver-class-name: org.postgresql.Driver
-
     jpa:
       hibernate:
         ddl-auto: create

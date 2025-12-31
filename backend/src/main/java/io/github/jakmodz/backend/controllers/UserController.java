@@ -1,5 +1,6 @@
 package io.github.jakmodz.backend.controllers;
 
+import io.github.jakmodz.backend.dtos.AccessToken;
 import io.github.jakmodz.backend.dtos.UserDto;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
@@ -39,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserDto user, HttpServletResponse response) {
+    public ResponseEntity<AccessToken> loginUser(@RequestBody UserDto user, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         user.getUsername(), user.getPassword())
@@ -48,16 +49,16 @@ public class UserController {
         String jwt = jwtService.generateToken(userDetails.getUsername());
         String refresh = refreshTokenService.createRefreshToken(userDetails.getUsername());
         setRefreshTokenCookie(response, refresh);
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(new AccessToken(jwt));
     }
     @PostMapping("/refresh")
-    public ResponseEntity<String> refreshToken(@CookieValue(name ="refreshToken") String refreshToken,HttpServletResponse response) {
+    public ResponseEntity<AccessToken> refreshToken(@CookieValue(name ="refreshToken") String refreshToken,HttpServletResponse response) {
         if (jwtService.validateJwtToken(refreshToken)) {
             String username = jwtService.getUsernameFromToken(refreshToken);
             String newJwt = jwtService.generateToken(username);
             String newRefresh = refreshTokenService.createRefreshToken(username);
             setRefreshTokenCookie(response, newRefresh);
-            return ResponseEntity.ok(newJwt);
+            return ResponseEntity.ok(new AccessToken(newJwt));
         } else {
             throw new ExpiredRefreshToken("Refresh token is expired or invalid");
         }

@@ -1,7 +1,6 @@
 package io.github.jakmodz.backend.jwt;
 
 import io.github.jakmodz.backend.models.User;
-import io.github.jakmodz.backend.services.UserService;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -87,7 +87,7 @@ public class UserController {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setPath("/auth");
+        cookie.setPath("/");
         cookie.setMaxAge(Math.toIntExact(refreshTokenDuration));
         response.addCookie(cookie);
     }
@@ -95,7 +95,7 @@ public class UserController {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setPath("/auth");
+        cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

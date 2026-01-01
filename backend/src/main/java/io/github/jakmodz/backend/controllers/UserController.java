@@ -76,7 +76,12 @@ public class UserController {
         setRefreshTokenCookie(response, refresh);
         return ResponseEntity.ok(new AccessToken(jwt));
     }
-
+    @Operation(summary = "Refresh access token", description = "Generates a new access token using the refresh token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully generated new access token"),
+            @ApiResponse(responseCode = "401", description = "Expired or invalid refresh token",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/refresh")
     public ResponseEntity<AccessToken> refreshToken(@CookieValue(name ="refreshToken") String refreshToken,HttpServletResponse response) {
         if (jwtService.validateJwtToken(refreshToken)) {

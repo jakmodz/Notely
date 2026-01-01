@@ -42,7 +42,14 @@ public class UserController {
         this.authenticationManager = authenticationManager;
         this.refreshTokenService = refreshTokenService;
     }
-
+    @Operation(summary = "Register new user", description = "Registers a new user with username and password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully registered"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Username already taken",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/register")
     public ResponseEntity<Void> registerUser(@Valid @RequestBody UserDto user) {
         userService.registerUser(user);
@@ -69,6 +76,7 @@ public class UserController {
         setRefreshTokenCookie(response, refresh);
         return ResponseEntity.ok(new AccessToken(jwt));
     }
+
     @PostMapping("/refresh")
     public ResponseEntity<AccessToken> refreshToken(@CookieValue(name ="refreshToken") String refreshToken,HttpServletResponse response) {
         if (jwtService.validateJwtToken(refreshToken)) {

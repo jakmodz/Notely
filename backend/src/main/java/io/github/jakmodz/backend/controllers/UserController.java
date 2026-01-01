@@ -94,6 +94,10 @@ public class UserController {
             throw new ExpiredRefreshToken("Refresh token is expired or invalid");
         }
     }
+    @Operation(summary = "Logout user", description = "Logs out the user by clearing the refresh token cookie")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully logged out")
+    })
     @PostMapping("/logout")
     public ResponseEntity<Void> logoutUser(HttpServletResponse response) {
         clearRefreshTokenCookie(response);

@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
@@ -32,6 +34,7 @@ public class UserController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
      UserController(UserServiceImpl userService, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
         this.userService = userService;
@@ -43,6 +46,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<Void> registerUser(@Valid @RequestBody UserDto user) {
         userService.registerUser(user);
+        logger.info("Registered new user: {}", user.getUsername());
         return ResponseEntity.ok().build();
     }
     @Operation(summary = "Login user", description = "Authenticates user and returns access token")

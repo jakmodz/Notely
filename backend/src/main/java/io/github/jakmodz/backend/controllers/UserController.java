@@ -2,9 +2,15 @@ package io.github.jakmodz.backend.controllers;
 
 import io.github.jakmodz.backend.dtos.AccessToken;
 import io.github.jakmodz.backend.dtos.UserDto;
+import io.github.jakmodz.backend.exceptions.ErrorResponse;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
 import io.github.jakmodz.backend.services.RefreshTokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -39,6 +45,14 @@ public class UserController {
         userService.registerUser(user);
         return ResponseEntity.ok().build();
     }
+    @Operation(summary = "Login user", description = "Authenticates user and returns access token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials or expired token",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/login")
     public ResponseEntity<AccessToken> loginUser(@RequestBody UserDto user, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(

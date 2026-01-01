@@ -35,10 +35,6 @@
           </div>
           
           <div class="space-y-2">
-            <div class="flex justify-between items-center ml-1">
-              <label class="text-sm font-bold text-slate-700">Password</label>
-              <a href="#" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors">Forgot password?</a>
-            </div>
             <input 
               v-model="password" 
               type="password" 

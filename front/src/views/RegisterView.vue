@@ -93,20 +93,35 @@ import { useRouter } from 'vue-router';
 import authService from '@/api/services/authService';
 
 const router = useRouter();
-
 const username = ref('');
-const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
 
 const handleRegister = () => {
-  if(password !==confirmPassword) {
+  if(confirmPassword.value !== password.value) {
     errorMessage.value = "Passwords do not match.";
     return;
   }
-    
+  let credentials = {
+    username: username.value,
+    password: password.value,
+  };
+  isLoading.value = true;
+  authService.register(credentials
+  ).then(response => {
+    isLoading.value = false;
+    errorMessage.value = '';
+    router.push('/login');
+  }).catch(error => {
+    isLoading.value = false;
+    if (error.response && error.response.data && error.response.data.message) {
+      errorMessage.value = error.response.data.message;
+    } else {
+      errorMessage.value = 'An error occurred during registration. Please try again.';
+    }
+  });
 };
 </script>
 

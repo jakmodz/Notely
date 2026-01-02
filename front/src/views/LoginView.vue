@@ -68,6 +68,7 @@
       </div>
 
       <p class="text-center mt-10 text-sm text-slate-500 font-medium"> 
+          Doen't have an account?
           <router-link to="/register" class="text-emerald-600 font-bold hover:text-emerald-700 transition-colors ml-1" >Register account</router-link>
       </p>
     </div>
@@ -97,7 +98,7 @@ const handleLogin = () =>{
     isLoading.value = false;
     errorMessage.value = '';
     authStore.setAccessToken(response.data.accessToken);
-    router.push('/home');
+    router.push('/');
   }).catch(error => {
     isLoading.value = false;
     if (error.response && error.response.data && error.response.data.message) {

@@ -22,7 +22,7 @@ const publicRoutes = [
 
 const protectedRoutes = [
   {
-    path: '/home',
+    path: '/',
     name: 'Home',
     component: HomePage,
     meta: { requiresAuth: true }
@@ -30,10 +30,6 @@ const protectedRoutes = [
 ];
 
 const routes = [
-  {
-    path: '/',
-    redirect: { name: 'Login' }
-  },
   ...publicRoutes,
   ...protectedRoutes
 ];
@@ -43,7 +39,7 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = authStore.isLoggedIn();
 
@@ -54,6 +50,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     return next({ name: 'Login' });
   }
+  
   next();
 });
 

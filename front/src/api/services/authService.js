@@ -2,7 +2,6 @@ import apiClient from "../axios";
 
 export default {
   login(credentials){
-    
     return apiClient.post('/auth/login',credentials);
   },
   logout(){

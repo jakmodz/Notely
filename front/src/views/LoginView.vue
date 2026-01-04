@@ -8,7 +8,7 @@
 
     <div class="max-w-md w-full">
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-3xl shadow-xl shadow-slate-200/50 mb-6 border border-slate-100">
+        <<div class="inline-flex items-center justify-center w-20 h-20 bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none mb-6 border border-slate-100 dark:border-slate-700">
           <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-inner">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -19,7 +19,7 @@
         <p class="text-slate-500 font-medium">Please enter your details to sign in</p>
       </div>
 
-      <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl shadow-slate-200/50 p-10 border border-white">
+      <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2rem] shadow-2xl shadow-slate-200/50 p-10 border border-white dark:border-slate-700">
         <form @submit.prevent="handleLogin" class="space-y-6">
           
           <div class="space-y-2">
@@ -29,7 +29,7 @@
                 v-model="username"  
                 required 
                 placeholder="username"
-                class="block w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all duration-300"
+                class="block w-full px-5 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all duration-300"
               />
             </div>
           </div>
@@ -40,7 +40,7 @@
               type="password" 
               required 
               placeholder="••••••••"
-              class="block w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all duration-300"
+              class="block w-full px-5 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all duration-300"
             />
           </div>
 
@@ -79,7 +79,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import apiClient from '@/api/services/authService';
-import { useAuthStore } from '@/api/auth.js';
+import { useAuthStore } from '@/stores/auth.js';
 
 const router = useRouter();
 const username = ref('');
@@ -109,9 +109,7 @@ const handleLogin = () =>{
     console.error(error);
   });
 }
-
 </script>
-
 <style scoped>
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

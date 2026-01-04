@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/api/auth.js";
+import { useAuthStore } from "@/stores/auth.js";
 
-const LoginView = () => import("../views/LoginView.vue");
-const RegisterView = () => import("../views/RegisterView.vue");
-const HomePage = () => import("../views/HomePage.vue");
-
+const LoginView = () => import("@/views/LoginView.vue");
+const RegisterView = () => import("@/views/RegisterView.vue");
+const HomePage = () => import("@/views/HomePage.vue");
+const SettingsPage = () => import("@/views/SettingsPage.vue");
+const NotFound = () => import("@/views/NotFound.vue");
 const publicRoutes = [
   {
     path: '/login',
@@ -26,12 +27,24 @@ const protectedRoutes = [
     name: 'Home',
     component: HomePage,
     meta: { requiresAuth: true }
+  },
+  {
+      path: '/settings',
+      name: 'Settings',
+      component: SettingsPage,
+      meta: { requiresAuth: true }
   }
 ];
-
+const NotFoundRoute = {
+  path: '/:pathMatch(.*)*',
+  name: 'NotFound',
+  component: NotFound
+}
 const routes = [
   ...publicRoutes,
-  ...protectedRoutes
+  ...protectedRoutes,
+  NotFoundRoute
+  
 ];
 
 const router = createRouter({
@@ -42,7 +55,11 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = authStore.isLoggedIn();
-
+  
+  if (to.name === 'NotFound') {
+     return next();
+   }
+  
   if (to.meta.requiresGuest && isAuthenticated) {
     return next({ name: 'Home' });
   }

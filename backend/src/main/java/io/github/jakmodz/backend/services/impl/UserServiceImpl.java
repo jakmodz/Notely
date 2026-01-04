@@ -1,6 +1,6 @@
 package io.github.jakmodz.backend.services.impl;
 
-import io.github.jakmodz.backend.dtos.UserDto;
+import io.github.jakmodz.backend.dtos.UserCredentials;
 import io.github.jakmodz.backend.exceptions.UsernameAlreadyTaken;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.repositories.UserRepository;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(UserDto user) {
+    public void registerUser(UserCredentials user) {
         logger.info("Registering user {}", user.getUsername());
         if(userRepository.existsByUsername(user.getUsername())) {
             logger.error("User {} already exists", user.getUsername());

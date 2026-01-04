@@ -1,10 +1,10 @@
 package io.github.jakmodz.backend.services;
 
-import io.github.jakmodz.backend.dtos.UserDto;
+import io.github.jakmodz.backend.dtos.UserCredentials;
 import io.github.jakmodz.backend.models.User;
 
 public interface UserService {
-    void registerUser(UserDto user);
+    void registerUser(UserCredentials user);
     User getUserByUsername(String username);
     User getUserById(Long id);
 }

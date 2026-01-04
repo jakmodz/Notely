@@ -1,6 +1,6 @@
 package io.github.jakmodz.backend;
 
-import io.github.jakmodz.backend.dtos.UserDto;
+import io.github.jakmodz.backend.dtos.UserCredentials;
 import io.github.jakmodz.backend.repositories.UserRepository;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import org.slf4j.Logger;
@@ -23,8 +23,8 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if(userRepository.findAll().isEmpty()) {
-            UserDto user = new UserDto("user1", "password1");
-            UserDto user2 = new UserDto("user2", "password2");
+            UserCredentials user = new UserCredentials("user1", "password1");
+            UserCredentials user2 = new UserCredentials("user2", "password2");
             try {
                 userService.registerUser(user);
                 userService.registerUser(user2);

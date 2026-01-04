@@ -1,6 +1,8 @@
 package io.github.jakmodz.backend.controllers;
 
 import io.github.jakmodz.backend.dtos.AccessToken;
+import io.github.jakmodz.backend.dtos.LoginResponse;
+import io.github.jakmodz.backend.dtos.UserCredentials;
 import io.github.jakmodz.backend.dtos.UserDto;
 import io.github.jakmodz.backend.exceptions.ErrorResponse;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
@@ -51,7 +53,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserDto user) {
+    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserCredentials user) {
         userService.registerUser(user);
         logger.info("Registered new user: {}", user.getUsername());
         return ResponseEntity.ok().build();
@@ -65,7 +67,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<AccessToken> loginUser(@RequestBody UserDto user, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody UserCredentials user, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         user.getUsername(), user.getPassword())
@@ -74,7 +76,7 @@ public class UserController {
         String jwt = jwtService.generateToken(userDetails.getUsername());
         String refresh = refreshTokenService.createRefreshToken(userDetails.getUsername());
         setRefreshTokenCookie(response, refresh);
-        return ResponseEntity.ok(new AccessToken(jwt));
+        return ResponseEntity.ok(new LoginResponse(jwt, new UserDto(userDetails.getUsername())));
     }
     @Operation(summary = "Refresh access token", description = "Generates a new access token using the refresh token")
     @ApiResponses(value = {

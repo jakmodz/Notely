@@ -12,15 +12,13 @@ const isAuthenticated = computed(() => authStore.isLoggedIn());
 
 onMounted(async () => {
   themeStore.initTheme();
-  // if (authStore.isLoggedIn()) {
-  //   await authStore.validateToken();
-  // }
 });
 
 const handleLogout = async () => {
   await authStore.logout();
   router.push('/login');
 };
+
 </script>
 
 <template>

@@ -10,8 +10,11 @@ const router = useRouter();
 
 const isAuthenticated = computed(() => authStore.isLoggedIn());
 
-onMounted(() => {
+onMounted(async () => {
   themeStore.initTheme();
+  // if (authStore.isLoggedIn()) {
+  //   await authStore.validateToken();
+  // }
 });
 
 const handleLogout = async () => {
@@ -55,7 +58,7 @@ const handleLogout = async () => {
           <div class="flex items-center">
             <button 
               @click="handleLogout"
-              class="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-200"
+              class="px-4 py-2 bg-red-500 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-200"
             >
               Logout
             </button>

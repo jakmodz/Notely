@@ -1,38 +1,22 @@
 import {defineStore} from 'pinia';
 import { ref } from 'vue';
-import axios from 'axios';
 import authService from '../api/services/authService';
-const API_URL = 'http://localhost:8080';
 
 export const useAuthStore = defineStore('auth',() =>{
   const accessToken = ref(localStorage.getItem('accessToken') || null);
-  const user = ref(null);
+  const user = ref(JSON.parse(localStorage.getItem('user')) || null);
   const isValidating = ref(false);
   
   const isLoggedIn = ()=> {
     return !!accessToken.value;    
   }
   
-  const validateToken = async () => {
-    if (!accessToken.value) return false;
-    
-    try {
-      isValidating.value = true;
-      const response = await axios.get(`${API_URL}/api/auth/validate`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken.value}`
-        }
-      });
-      
-      if (response.data.user) {
-        user.value = response.data.user;
-      }
-      return true;
-    } catch (error) {
-      logout();
-      return false;
-    } finally {
-      isValidating.value = false;
+  const setUser = (userData)=>{
+    user.value = userData;
+    if (userData) {
+      localStorage.setItem('user', JSON.stringify(userData));
+    } else {
+      localStorage.removeItem('user');
     }
   }
   
@@ -52,7 +36,7 @@ export const useAuthStore = defineStore('auth',() =>{
        console.error('Error during logout:', error);
      } finally { 
        accessToken.value = null;
-       user.value = null;
+       setUser(null);
        localStorage.removeItem('accessToken');
      }
    }
@@ -68,9 +52,9 @@ export const useAuthStore = defineStore('auth',() =>{
     user,
     isValidating,
     setAccessToken,
+    setUser,
     logout,
     isLoggedIn,
-    validateToken,
     getAuthHeaders,
   }
   

@@ -98,6 +98,7 @@ const handleLogin = () =>{
     isLoading.value = false;
     errorMessage.value = '';
     authStore.setAccessToken(response.data.accessToken);
+    authStore.setUser(response.data.user);
     router.push('/');
   }).catch(error => {
     isLoading.value = false;

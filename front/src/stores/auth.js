@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import { ref } from 'vue';
 import axios from 'axios';
-import authService from './services/authService';
+import authService from '../api/services/authService';
 const API_URL = 'http://localhost:8080';
 
 export const useAuthStore = defineStore('auth',() =>{

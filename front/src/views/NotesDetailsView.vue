@@ -13,6 +13,23 @@
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600 mx-auto"></div>
                 <p class="mt-4 text-slate-600 dark:text-slate-400">Loading note...</p>
             </div>
+            <div v-else-if="error" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-red-200 dark:border-red-700 text-center">
+                <div class="flex flex-col items-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <h2 class="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">Error Loading Note</h2>
+                        <p class="text-lg text-red-700 dark:text-red-300">{{ error }}</p>
+                    </div>
+                    <button 
+                        @click="router.push({ name: 'Home' })"
+                        class="mt-4 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40"
+                    >
+                        Back to Notes
+                    </button>
+                </div>
+            </div>
             <div v-else-if="note" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
                 <div class="p-2 border-b border-slate-200 dark:border-slate-700">
                     <h1 class="text-4xl text-center font-bold text-slate-900 dark:text-white mb-4">
@@ -61,18 +78,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed,watch} from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BackButton from '@/components/BackButton.vue';
-import VueMarkdown from 'vue-markdown-render'
 import NoteView from '@/components/NoteView.vue';
+import notesService from '@/api/services/notesService.js';
+
 const route = useRoute();
 const router = useRouter();
 
 const note = ref(null);
 const loading = ref(true);
 const error = ref(null);
-
 
 const formatDate = (dateString) => {
     if (!dateString) return 'No date';
@@ -91,139 +108,40 @@ const fetchNote = async () => {
     error.value = null;
     
     try {
-        // TODO: Replace this with actual API call
+        const response = await notesService.getNote(route.params.id);
+        note.value = response.data;
+    } catch (err) {
+        const backendMessage = err.response?.data?.message;
         
-        const mockNotes = [
-          {
-              uuid: '1',
-              title: 'Complete Markdown Test',
-              content: `# Heading 1
-This is a paragraph with **bold text** and *italic text* and ***bold italic***.
-
-## Heading 2
-Here's a [link to Google](https://google.com) and some \`inline code\`.
-
-### Heading 3
-#### Heading 4
-
-### Lists
-
-**Unordered list:**
-- Item one
-- Item two
-- Nested item
-- Another nested item
-- Item three
-
-**Ordered list:**
-1. First item
-2. Second item
-3. Third item
-
-### Code Block
-
-\`\`\`javascript
-function hello() {
-console.log("Hello, World!");
-return true;
-}
-\`\`\`
-
-### Blockquote
-
-> This is a blockquote.
-> It can span multiple lines.
-
-### Task List
-
-- [x] Completed task
-- [ ] Incomplete task
-- [ ] Another task
-
-### Table
-
-| Feature | Status |Priority |
-|---------|--------|----------|
-| Dark Mode | ✅ | High |
-| Search | 🚧 | Medium |
-| Export | ❌ | Low |
-
-### Horizontal Rule
-
----
-
-### Emphasis
-
-This is **bold**, this is *italic*, and this is ~~strikethrough~~.
-**Random Photo:**
-### Images
-![Random](https://picsum.photos/600/300)
-
-![Alt text](https://via.placeholder.com/150)
----
-
-That's it! If you can see all these elements properly styled, markdown is working correctly.`,
-              created: '2024-01-15T10:30:00',
-              modified: '2024-01-20T15:45:00'
-          },
-
-            {
-                uuid: '2',
-                title: 'Meeting Notes',
-                content: '## Q1 2024 Planning\n\nDiscuss project timeline and milestones for Q1 2024.\n\n### Action Items\n1. Review requirements\n2. Set deadlines\n3. Assign tasks',
-                created: '2024-01-18T09:00:00',
-                modified: '2024-01-18T09:30:00'
-            },
-            {
-                uuid: '3',
-                title: 'Ideas',
-                content: '# New Feature Ideas\n\n- Dark mode ✅\n- Search functionality\n- Tags\n- Sharing capabilities\n- Export to PDF',
-                created: '2024-01-20T14:20:00',
-                modified: '2024-01-22T11:15:00'
-            },
-            {
-                uuid: '4',
-                title: 'Grocery List',
-                content: '## Shopping List\n\n- Milk\n- Eggs\n- Bread\n- Coffee\n- Vegetables\n  - Carrots\n  - Broccoli\n  - Spinach',
-                created: '2024-01-21T08:00:00',
-                modified: '2024-01-21T08:05:00'
-            },
-            {
-                uuid: '5',
-                title: 'Book Recommendations',
-                content: '## Must Read Books\n\n### Software Engineering\n- *Clean Code* by Robert Martin\n- *Design Patterns* by Gang of Four\n- *The Pragmatic Programmer*\n\n### Personal Development\n- *Atomic Habits*\n- *Deep Work*',
-                created: '2024-01-19T16:30:00',
-                modified: '2024-01-23T10:00:00'
-            }
-        ];
-        
-        const foundNote = mockNotes.find(n => n.uuid === route.params.id);
-        
-        if (!foundNote) {
+        if (err.response?.status === 404) {
+            router.push({ name: 'NotFound' });
+        } else if (err.response?.status === 403) {
             router.push({ name: 'NotFound' });
         } else {
-            note.value = foundNote;
+            error.value = backendMessage || 'Failed to load note. Please try again.';
         }
-    } catch (err) {
-        error.value = 'Failed to load note. Please try again.';
-        console.error('Error fetching note:', err);
     } finally {
         loading.value = false;
     }
 };
 
 const handleEdit = () => {
-    // TODO: Navigate to edit view or open edit modal
+    console.log('Edit note:', note.value.uuid);
 };
 
 const handleDelete = () => {
-    // TODO: Show confirmation dialog and delete note
     if (confirm('Are you sure you want to delete this note?')) {
         console.log('Delete note:', note.value.uuid);
-        // After deleting, navigate back to home
+        // After deleting, navigate back to notes list
         // router.push({ name: 'Home' });
     }
 };
+
+watch(() => route.params.id, (newId) => {
+    if (newId) {
+        fetchNote();
+    }
+});
 
 onMounted(() => {
     fetchNote();

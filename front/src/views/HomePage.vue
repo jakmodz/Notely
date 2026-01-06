@@ -78,51 +78,22 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import NotesList from '../components/NotesList.vue';
-
+import NotesList from '@/components/NotesList.vue';
+import notesService from '@/api/services/notesService';
 const router = useRouter();
-
 const notes = ref(null);
 
 
 const fetchNotes = async () => {
-    notes.value = [
-        {
-            uuid: '1',
-            title: 'Welcome to Notely',
-            content: '# This is your first note. You can edit or delete it anytime.',
-            created: '2024-01-15T10:30:00',
-            modified: '2024-01-20T15:45:00'
-        },
-        {
-            uuid: '2',
-            title: 'Meeting Notes',
-            content: 'Discuss project timeline and milestones for Q1 2024.',
-            created: '2024-01-18T09:00:00',
-            modified: '2024-01-18T09:30:00'
-        },
-        {
-            uuid: '3',
-            title: 'Ideas',
-            content: 'New feature ideas: dark mode, search functionality, tags.',
-            created: '2024-01-20T14:20:00',
-            modified: '2024-01-22T11:15:00'
-        },
-        {
-            uuid: '4',
-            title: 'Grocery List',
-            content: 'Milk, eggs, bread, coffee, vegetables.',
-            created: '2024-01-21T08:00:00',
-            modified: '2024-01-21T08:05:00'
-        },
-        {
-            uuid: '5',
-            title: 'Book Recommendations',
-            content: 'Clean Code by Robert Martin, Design Patterns by Gang of Four.',
-            created: '2024-01-19T16:30:00',
-            modified: '2024-01-23T10:00:00'
-        }
-    ];
+   notesService.getAllNotes()
+    .then(response => {
+        notes.value = response.data;
+        console.log("Fetched notes:", notes.value);
+    })
+    .catch(error => {
+        console.error("Error fetching notes:", error);
+        
+    });
 };
 
 onMounted(() => {

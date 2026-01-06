@@ -5,5 +5,5 @@ spring:
     active: dev
 jwt:
   secret: haslomaslo11231231133131331232131312312312312312
-  refresh-expiration: 604800
-  expiration: 3600
+  refresh-expiration: 604800000
+  expiration: 3600000

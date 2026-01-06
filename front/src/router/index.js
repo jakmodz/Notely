@@ -6,6 +6,8 @@ const RegisterView = () => import("@/views/RegisterView.vue");
 const HomePage = () => import("@/views/HomePage.vue");
 const SettingsPage = () => import("@/views/SettingsPage.vue");
 const NotFound = () => import("@/views/NotFound.vue");
+const NoteDetails = () => import("@/views/NotesDetailsView.vue");
+const NotesView = () => import("@/views/NotesView.vue");
 const publicRoutes = [
   {
     path: '/login',
@@ -29,10 +31,17 @@ const protectedRoutes = [
     meta: { requiresAuth: true }
   },
   {
-      path: '/settings',
-      name: 'Settings',
-      component: SettingsPage,
-      meta: { requiresAuth: true }
+    path: '/settings',
+    name: 'Settings',
+    component: SettingsPage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/notes",
+    children: [
+      {path: ":id", name: "NoteDetails", component:NoteDetails, meta: { requiresAuth: true }},
+      {path:"",component: NotesView, meta: { requiresAuth: true }}
+    ]
   }
 ];
 const NotFoundRoute = {
@@ -44,7 +53,6 @@ const routes = [
   ...publicRoutes,
   ...protectedRoutes,
   NotFoundRoute
-  
 ];
 
 const router = createRouter({

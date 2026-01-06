@@ -20,7 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-
+//TODO: swagger docs
+//TODO: loggging
 @RestController
 @RequestMapping("/notes")
 public class NotesController {

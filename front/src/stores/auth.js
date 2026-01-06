@@ -46,7 +46,6 @@ export const useAuthStore = defineStore('auth',() =>{
       'Authorization': `Bearer ${accessToken.value}`
     }
   }
-  
   return {
     accessToken,
     user,

@@ -20,7 +20,6 @@ const handleLogout = async () => {
 };
 
 </script>
-
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
     <nav v-if="isAuthenticated" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 transition-colors duration-300">
@@ -44,6 +43,11 @@ const handleLogout = async () => {
               >
                 Home
               </router-link>
+              <router-link 
+                to="/notes" 
+                class="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all duration-200">
+                    Notes
+                </router-link>
               <router-link 
                 to="/settings" 
                 class="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all duration-200"
@@ -71,14 +75,10 @@ const handleLogout = async () => {
 
 <style>
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --color-background-light: #ffffff;
   --color-background-dark: #0f172a;
-  --color-text-light: #020617;
-  --color-text-dark: #f8fafc;
-  --color-primary-light: #2563eb;
-  --color-primary-dark: #3b82f6;
 }
 </style>

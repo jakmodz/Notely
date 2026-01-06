@@ -37,9 +37,21 @@
                 :note="note"
                 @view="handleView"
                 @edit="handleEdit"
-                @delete="handleDelete"
+                @delete="openDeleteModal"
             />
         </div>
+
+
+        <ConfirmModal
+            :isOpen="showDeleteModal"
+            title="Delete Note"
+            :message="`Are you sure you want to delete '${noteToDelete?.title || 'this note'}'? This action cannot be undone.`"
+            confirmText="Delete"
+            cancelText="Cancel"
+            variant="danger"
+            @confirm="confirmDelete"
+            @cancel="closeDeleteModal"
+        />
     </div>
 </template>
 
@@ -47,7 +59,10 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Note from './Note.vue';
-const router = useRouter()
+import ConfirmModal from './ConfirmModal.vue';
+
+const router = useRouter();
+
 const props = defineProps({
     notes: {
         type: Array,
@@ -59,7 +74,8 @@ const emit = defineEmits(['view', 'edit', 'delete']);
 
 const sortBy = ref('modified');
 const sortOrder = ref('desc');
-
+const showDeleteModal = ref(false);
+const noteToDelete = ref(null);
 
 const sortedNotes = computed(() => {
     if (!props.notes || props.notes.length === 0) return [];
@@ -118,13 +134,29 @@ const loadSortPreference = () => {
     }
 };
 
-
 const handleEdit = (note) => emit('edit', note);
-const handleDelete = (note) => emit('delete', note);
+
+const openDeleteModal = (note) => {
+    noteToDelete.value = note;
+    showDeleteModal.value = true;
+};
+
+const closeDeleteModal = () => {
+    showDeleteModal.value = false;
+    noteToDelete.value = null;
+};
+
+const confirmDelete = () => {
+    if (noteToDelete.value) {
+        emit('delete', noteToDelete.value);
+    }
+    closeDeleteModal();
+};
 
 const handleView = (note) => {
     router.push({ name: 'NoteDetails', params: { id: note.uuid } });
 };
+
 watch(sortBy, () => {
     saveSortPreference();
 });

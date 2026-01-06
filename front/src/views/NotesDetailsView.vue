@@ -13,6 +13,7 @@
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600 mx-auto"></div>
                 <p class="mt-4 text-slate-600 dark:text-slate-400">Loading note...</p>
             </div>
+
             <div v-else-if="error" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-red-200 dark:border-red-700 text-center">
                 <div class="flex flex-col items-center gap-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,6 +31,8 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Note Content -->
             <div v-else-if="note" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
                 <div class="p-2 border-b border-slate-200 dark:border-slate-700">
                     <h1 class="text-4xl text-center font-bold text-slate-900 dark:text-white mb-4">
@@ -46,7 +49,7 @@
                             Edit
                         </button>
                         <button 
-                            @click="handleDelete"
+                            @click="openDeleteModal"
                             class="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-red-500/30 hover:shadow-red-500/40"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,6 +77,17 @@
                 </div>
             </div>
         </div>
+
+        <ConfirmModal
+            :isOpen="showDeleteModal"
+            title="Delete Note"
+            :message="`Are you sure you want to delete '${note?.title || 'this note'}'? This action cannot be undone.`"
+            confirmText="Delete"
+            cancelText="Cancel"
+            variant="danger"
+            @confirm="confirmDelete"
+            @cancel="closeDeleteModal"
+        />
     </div>
 </template>
 
@@ -82,6 +96,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BackButton from '@/components/BackButton.vue';
 import NoteView from '@/components/NoteView.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import notesService from '@/api/services/notesService.js';
 
 const route = useRoute();
@@ -90,6 +105,7 @@ const router = useRouter();
 const note = ref(null);
 const loading = ref(true);
 const error = ref(null);
+const showDeleteModal = ref(false);
 
 const formatDate = (dateString) => {
     if (!dateString) return 'No date';
@@ -106,17 +122,21 @@ const formatDate = (dateString) => {
 const fetchNote = async () => {
     loading.value = true;
     error.value = null;
+    note.value = null;
     
     try {
         const response = await notesService.getNote(route.params.id);
         note.value = response.data;
     } catch (err) {
+        console.error('Error fetching note:', err);
+        
         const backendMessage = err.response?.data?.message;
         
         if (err.response?.status === 404) {
-            router.push({ name: 'NotFound' });
+            error.value = backendMessage || 'Note not found.';
+            // Alternatively, redirect: router.push({ name: 'NotFound' });
         } else if (err.response?.status === 403) {
-            router.push({ name: 'NotFound' });
+            error.value = backendMessage || 'You do not have permission to view this note.';
         } else {
             error.value = backendMessage || 'Failed to load note. Please try again.';
         }
@@ -129,12 +149,20 @@ const handleEdit = () => {
     console.log('Edit note:', note.value.uuid);
 };
 
-const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this note?')) {
-        console.log('Delete note:', note.value.uuid);
-        // After deleting, navigate back to notes list
-        // router.push({ name: 'Home' });
-    }
+const openDeleteModal = () => {
+    showDeleteModal.value = true;
+};
+
+const closeDeleteModal = () => {
+    showDeleteModal.value = false;
+};
+
+const confirmDelete = () => {
+    // TODO: Implement actual delete API call
+    console.log('Delete note:', note.value.uuid);
+    closeDeleteModal();
+    // After deleting, navigate back to notes list
+    // router.push({ name: 'Home' });
 };
 
 watch(() => route.params.id, (newId) => {

@@ -88,7 +88,6 @@ const fetchNotes = async () => {
    notesService.getAllNotes()
     .then(response => {
         notes.value = response.data;
-        console.log("Fetched notes:", notes.value);
     })
     .catch(error => {
         console.error("Error fetching notes:", error);

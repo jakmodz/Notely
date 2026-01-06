@@ -1,9 +1,12 @@
 package io.github.jakmodz.backend.repositories;
 
 import io.github.jakmodz.backend.models.Note;
+import io.github.jakmodz.backend.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 import java.util.UUID;
 
-interface NoteRepository extends JpaRepository<Note, UUID> {
-
+public interface NoteRepository extends JpaRepository<Note, UUID> {
+    List<Note> findByUser(User user);
 }

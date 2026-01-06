@@ -158,11 +158,15 @@ const closeDeleteModal = () => {
 };
 
 const confirmDelete = () => {
-    // TODO: Implement actual delete API call
-    console.log('Delete note:', note.value.uuid);
-    closeDeleteModal();
-    // After deleting, navigate back to notes list
-    // router.push({ name: 'Home' });
+    notesService.deleteNote(note.value.uuid)
+        .then(() => {
+             router.push("/");
+        })
+        .catch(err => {
+            console.error('Error deleting note:', err);
+            const errorMessage = err.response?.data?.message || 'Failed to delete note';
+            alert(errorMessage);
+        });
 };
 
 watch(() => route.params.id, (newId) => {

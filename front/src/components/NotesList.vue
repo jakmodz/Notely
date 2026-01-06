@@ -41,7 +41,6 @@
             />
         </div>
 
-
         <ConfirmModal
             :isOpen="showDeleteModal"
             title="Delete Note"
@@ -60,6 +59,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Note from './Note.vue';
 import ConfirmModal from './ConfirmModal.vue';
+import notesService from '@/api/services/notesService.js';
 
 const router = useRouter();
 
@@ -70,7 +70,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['view', 'edit', 'delete']);
+const emit = defineEmits(['noteDeleted']);
 
 const sortBy = ref('modified');
 const sortOrder = ref('desc');
@@ -134,7 +134,14 @@ const loadSortPreference = () => {
     }
 };
 
-const handleEdit = (note) => emit('edit', note);
+const handleView = (note) => {
+    router.push({ name: 'NoteDetails', params: { id: note.uuid } });
+};
+
+const handleEdit = (note) => {
+    // Navigate to the note details page - editing happens there
+    router.push({ name: 'NoteDetails', params: { id: note.uuid } });
+};
 
 const openDeleteModal = (note) => {
     noteToDelete.value = note;
@@ -146,15 +153,21 @@ const closeDeleteModal = () => {
     noteToDelete.value = null;
 };
 
-const confirmDelete = () => {
-    if (noteToDelete.value) {
-        emit('delete', noteToDelete.value);
+const confirmDelete = async () => {
+    if (!noteToDelete.value) return;
+    
+    try {
+        await notesService.deleteNote(noteToDelete.value.uuid);
+        console.log('Note deleted successfully:', noteToDelete.value.uuid);
+        emit('noteDeleted', noteToDelete.value.uuid);
+        
+        closeDeleteModal();
+    } catch (err) {
+        console.error('Error deleting note:', err);
+        const errorMessage = err.response?.data?.message || 'Failed to delete note';
+        alert(errorMessage);
+        closeDeleteModal();
     }
-    closeDeleteModal();
-};
-
-const handleView = (note) => {
-    router.push({ name: 'NoteDetails', params: { id: note.uuid } });
 };
 
 watch(sortBy, () => {

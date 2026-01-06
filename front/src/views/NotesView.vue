@@ -1,5 +1,5 @@
 <template>
-<NotesList class="mx-4" :notes="notes" />
+<NotesList class="mx-4" :notes="notes" @noteDeleted="handleNoteDeleted" />
 </template>
 <script setup>
 import NotesList from "@/components/NotesList.vue";
@@ -16,8 +16,11 @@ const fetchNotes = async () => {
     })
     .catch(error => {
         console.error("Error fetching notes:", error);
-        
     });
+};
+
+const handleNoteDeleted = (deletedNoteUuid) => {
+    notes.value = notes.value.filter(note => note.uuid !== deletedNoteUuid);
 };
 
 onMounted(() => {

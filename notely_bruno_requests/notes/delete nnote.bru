@@ -1,0 +1,20 @@
+meta {
+  name: delete nnote
+  type: http
+  seq: 3
+}
+
+delete {
+  url: http://127.0.0.1:8080/notes/8a0cd35c-8f34-4b12-a5a0-36f581680db4
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VyMSIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3Njc3MzE3OTAsImV4cCI6MTc2NzczNTM5MH0.9EhB8vFu6FkVhv4zhjAN2l2epqgO2IIBcvYyoouhS08f1DUjps79oL04mDXIhe1l
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

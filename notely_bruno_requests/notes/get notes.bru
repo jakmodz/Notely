@@ -1,0 +1,20 @@
+meta {
+  name: get notes
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://127.0.0.1:8080/notes
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VyMSIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3Njc3MjQ1MzMsImV4cCI6MTc2NzcyNDYzM30.e6F2jfPTmaLmCI2U0x4mgRKSmzYdvY7KTq7omqRu85w7WXCJVfdGPqJ5G7uPOeRO
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

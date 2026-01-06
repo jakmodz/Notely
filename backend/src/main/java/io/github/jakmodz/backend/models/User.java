@@ -25,8 +25,9 @@ public class User {
     String username;
     String password;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     Set<Note> notes;
+
 
     @CreationTimestamp
     LocalDateTime created;

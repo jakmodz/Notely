@@ -13,19 +13,7 @@
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600 mx-auto"></div>
                 <p class="mt-4 text-slate-600 dark:text-slate-400">Loading note...</p>
             </div>
-
-            <div v-else-if="error" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-red-200 dark:border-red-800 text-center">
-                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Error Loading Note</h3>
-                <p class="text-slate-600 dark:text-slate-400">{{ error }}</p>
-            </div>
-
             <div v-else-if="note" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
-                
                 <div class="p-2 border-b border-slate-200 dark:border-slate-700">
                     <h1 class="text-4xl text-center font-bold text-slate-900 dark:text-white mb-4">
                         {{ note.title || 'Untitled' }}
@@ -73,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed,watch} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BackButton from '@/components/BackButton.vue';
 import VueMarkdown from 'vue-markdown-render'
@@ -84,6 +72,7 @@ const router = useRouter();
 const note = ref(null);
 const loading = ref(true);
 const error = ref(null);
+
 
 const formatDate = (dateString) => {
     if (!dateString) return 'No date';
@@ -104,8 +93,6 @@ const fetchNote = async () => {
     try {
         // TODO: Replace this with actual API call
         
-        
-        // Mock data for now - matches the HomePage mock data
         const mockNotes = [
           {
               uuid: '1',
@@ -213,7 +200,7 @@ That's it! If you can see all these elements properly styled, markdown is workin
         const foundNote = mockNotes.find(n => n.uuid === route.params.id);
         
         if (!foundNote) {
-            error.value = 'Note not found';
+            router.push({ name: 'NotFound' });
         } else {
             note.value = foundNote;
         }

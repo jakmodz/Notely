@@ -45,8 +45,9 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Note from './Note.vue';
-import router from '@/router/index.js';
+const router = useRouter()
 const props = defineProps({
     notes: {
         type: Array,

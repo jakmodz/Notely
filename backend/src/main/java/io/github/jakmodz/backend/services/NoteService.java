@@ -12,6 +12,7 @@ public interface NoteService {
     void  createNote(NoteDto note, User user);
     List<Note> getAllNotes(User user);
     Note getNoteById(UUID noteId, User user);
+    void updateNoteById(UUID noteId, NoteDto noteDto, User user);
     void deleteNoteById(UUID noteId, User user);
     default Note transformToEntity(NoteDto noteDto){
         Note  note = new Note();

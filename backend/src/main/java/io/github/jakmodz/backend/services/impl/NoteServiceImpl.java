@@ -37,6 +37,15 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
+    public void updateNoteById(UUID noteId, NoteDto noteDto, User user) {
+        Note note = getNoteById(noteId, user);
+        logger.debug("Updating note: {}", note);
+        note.setTitle(noteDto.getTitle());
+        note.setContent(noteDto.getContent());
+        noteRepository.save(note);
+        logger.debug("Updated note: {}", note);
+    }
+    @Override
     public Note getNoteById(UUID noteId, User user) {
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + noteId));

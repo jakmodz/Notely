@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 //TODO:reset password
+//TODO : docs
 @RestController
 @RequestMapping("/notes")
 public class NotesController {
@@ -85,6 +86,13 @@ public class NotesController {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);
         noteService.deleteNoteById(id, user);
+        return ResponseEntity.ok().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateNote(Principal principal, @PathVariable UUID id, @Valid @RequestBody NoteDto noteDto) {
+        String username = principal.getName();
+        User user = userService.getUserByUsername(username);
+        noteService.updateNoteById(id, noteDto, user);
         return ResponseEntity.ok().build();
     }
 }

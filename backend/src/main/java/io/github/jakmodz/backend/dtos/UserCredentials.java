@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-//TODO: password validation
 @Data
 @AllArgsConstructor
 public class UserCredentials {

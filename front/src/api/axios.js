@@ -26,6 +26,10 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const authStore = useAuthStore();
+    if (originalRequest.url?.includes('/auth/login') || 
+            originalRequest.url?.includes('/auth/register')) {
+          return Promise.reject(error);
+    }
     if(error.response?.status === 401 && !originalRequest._retry){
       originalRequest._retry = true;
       try{
@@ -36,7 +40,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       }catch (err){
         authStore.logout();
-        router.push("/logout");
         return Promise.reject(err);
       }
     }

@@ -1,29 +1,23 @@
 package io.github.jakmodz.backend.controllers;
 
-
 import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
-import io.github.jakmodz.backend.services.NoteService;
 import io.github.jakmodz.backend.services.impl.NoteServiceImpl;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-//TODO: swagger docs
 //TODO:reset password
 @RestController
 @RequestMapping("/notes")

@@ -172,7 +172,6 @@ public class GlobalExceptionHandler {
     }
 
     // ==================== Validation Exceptions ====================
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException e, WebRequest request) {
         Map<String, String> errors = new HashMap<>();

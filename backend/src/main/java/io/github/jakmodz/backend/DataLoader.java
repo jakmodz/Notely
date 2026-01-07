@@ -17,19 +17,15 @@ import org.springframework.stereotype.Component;
 @Transactional
 public class DataLoader implements CommandLineRunner {
     private final String MARKDOWN ="""
-    # Heading 1
-    This is a paragraph with **bold text** and *italic text* and ***bold italic***.
-
-            ## Heading 2
-    Here's a [link to Google](https://google.com) and some `inline code`.
-
-            ### Heading 3
-            #### Heading 4
-
-            ### Lists
-
+# Heading 1
+This is a paragraph with **bold text** and *italic text* and ***bold italic***.
+## Heading 2
+Here's a [link to Google](https://google.com) and some `inline code`.
+### Heading 3
+#### Heading 4
+### Lists
 **Unordered list:**
-            - Item one
+- Item one
 - Item two
 - Nested item
 - Another nested item
@@ -48,14 +44,10 @@ public class DataLoader implements CommandLineRunner {
         return true;
     }
 ```
-
-        ### Blockquote
-
+### Blockquote
 > This is a blockquote.
-            > It can span multiple lines.
-
+> It can span multiple lines.
 ### Task List
-
 - [x] Completed task
 - [ ] Incomplete task
 - [ ] Another task
@@ -63,25 +55,21 @@ public class DataLoader implements CommandLineRunner {
 ### Table
 
 | Feature | Status |Priority |
-            |---------|--------|----------|
-            | Dark Mode | ✅ | High |
-            | Search | 🚧 | Medium |
-            | Export | ❌ | Low |
+|---------|--------|----------|
+| Dark Mode | ✅ | High |
+| Search | 🚧 | Medium |
+| Export | ❌ | Low |
 
-            ### Horizontal Rule
-
+### Horizontal Rule
 ---
-
-        ### Emphasis
-
-    This is **bold**, this is *italic*, and this is ~~strikethrough~~.
-            **Random Photo:**
-            ### Images
+### Emphasis
+This is **bold**, this is *italic*, and this is ~~strikethrough~~.
+**Random Photo:**
+### Images
 ![Random](https://picsum.photos/600/300)
 
-            ![Alt text](https://via.placeholder.com/150)
-            ---
-
+![Alt text](https://via.placeholder.com/150)
+---
     That's it! If you can see all these elements properly styled, markdown is working correctly.""";
     private final Logger logger = LoggerFactory.getLogger(DataLoader.class);
     private final UserServiceImpl userService;

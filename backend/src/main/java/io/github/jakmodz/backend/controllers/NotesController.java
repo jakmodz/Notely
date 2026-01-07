@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 //TODO: swagger docs
 //TODO: logging
+//TODO:reset password
 @RestController
 @RequestMapping("/notes")
 public class NotesController {

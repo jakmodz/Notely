@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div v-else>
-                    <NotesList :notes="notes" />
+                  <NotesList :notes="notes" @noteDeleted="handleNoteDeleted"/>
                 </div>
             </div>
         </div>
@@ -83,7 +83,6 @@ import notesService from '@/api/services/notesService';
 const router = useRouter();
 const notes = ref(null);
 
-
 const fetchNotes = async () => {
    notesService.getAllNotes()
     .then(response => {
@@ -91,8 +90,11 @@ const fetchNotes = async () => {
     })
     .catch(error => {
         console.error("Error fetching notes:", error);
-        
+        notes.value = null;
     });
+};
+const handleNoteDeleted = (deletedNoteUuid) => {
+    notes.value = notes.value.filter(note => note.uuid !== deletedNoteUuid);
 };
 
 onMounted(() => {

@@ -139,7 +139,6 @@ const handleView = (note) => {
 };
 
 const handleEdit = (note) => {
-    // Navigate to the note details page - editing happens there
     router.push({ name: 'NoteDetails', params: { id: note.uuid } });
 };
 
@@ -160,7 +159,6 @@ const confirmDelete = async () => {
         await notesService.deleteNote(noteToDelete.value.uuid);
         console.log('Note deleted successfully:', noteToDelete.value.uuid);
         emit('noteDeleted', noteToDelete.value.uuid);
-        
         closeDeleteModal();
     } catch (err) {
         console.error('Error deleting note:', err);

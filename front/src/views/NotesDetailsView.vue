@@ -8,12 +8,10 @@
 
         <div class="max-w-4xl mx-auto">
             <BackButton />
-            
             <div v-if="loading" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-slate-100 dark:border-slate-700 text-center">
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600 mx-auto"></div>
                 <p class="mt-4 text-slate-600 dark:text-slate-400">Loading note...</p>
             </div>
-
             <div v-else-if="error" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-red-200 dark:border-red-700 text-center">
                 <div class="flex flex-col items-center gap-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,7 +30,6 @@
                 </div>
             </div>
 
-            <!-- Note Content -->
             <div v-else-if="note" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/30 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
                 <div class="p-2 border-b border-slate-200 dark:border-slate-700">
                     <h1 class="text-4xl text-center font-bold text-slate-900 dark:text-white mb-4">
@@ -134,7 +131,6 @@ const fetchNote = async () => {
         
         if (err.response?.status === 404) {
             error.value = backendMessage || 'Note not found.';
-            // Alternatively, redirect: router.push({ name: 'NotFound' });
         } else if (err.response?.status === 403) {
             error.value = backendMessage || 'You do not have permission to view this note.';
         } else {
@@ -146,7 +142,7 @@ const fetchNote = async () => {
 };
 
 const handleEdit = () => {
-    console.log('Edit note:', note.value.uuid);
+    router.push({ name: 'NoteEdit', params: { id: note.value.uuid } });
 };
 
 const openDeleteModal = () => {
@@ -164,8 +160,7 @@ const confirmDelete = () => {
         })
         .catch(err => {
             console.error('Error deleting note:', err);
-            const errorMessage = err.response?.data?.message || 'Failed to delete note';
-            alert(errorMessage);
+            error.value = err.response?.data?.message || 'Failed to delete note';
         });
 };
 

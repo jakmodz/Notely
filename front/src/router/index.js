@@ -8,6 +8,7 @@ const SettingsPage = () => import("@/views/SettingsPage.vue");
 const NotFound = () => import("@/views/NotFound.vue");
 const NoteDetails = () => import("@/views/NotesDetailsView.vue");
 const NotesView = () => import("@/views/NotesView.vue");
+const NoteEditView = () => import("@/views/NoteEditView.vue");
 const publicRoutes = [
   {
     path: '/login',
@@ -39,6 +40,7 @@ const protectedRoutes = [
   {
     path: "/notes",
     children: [
+      {path:":id/edit",name:"NoteEdit",component:NoteEditView, meta: { requiresAuth: true }},
       {path: ":id", name: "NoteDetails", component:NoteDetails, meta: { requiresAuth: true }},
       {path:"",component: NotesView, meta: { requiresAuth: true }}
     ]

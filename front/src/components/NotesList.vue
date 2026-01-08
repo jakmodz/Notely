@@ -139,7 +139,7 @@ const handleView = (note) => {
 };
 
 const handleEdit = (note) => {
-    router.push({ name: 'NoteDetails', params: { id: note.uuid } });
+    router.push({ name: 'NoteEdit', params: { id: note.uuid } });
 };
 
 const openDeleteModal = (note) => {

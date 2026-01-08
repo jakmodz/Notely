@@ -1,12 +1,10 @@
 package io.github.jakmodz.backend.controllers;
 
-import io.github.jakmodz.backend.dtos.AccessToken;
-import io.github.jakmodz.backend.dtos.LoginResponse;
-import io.github.jakmodz.backend.dtos.UserCredentials;
-import io.github.jakmodz.backend.dtos.UserDto;
+import io.github.jakmodz.backend.dtos.*;
 import io.github.jakmodz.backend.exceptions.ErrorResponse;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
+import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.services.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/auth")
@@ -60,7 +60,9 @@ public class UserController {
     }
     @Operation(summary = "Login user", description = "Authenticates user and returns access token")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully authenticated"),
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated",
+                content = @Content(schema = @Schema(implementation = LoginResponse.class))
+            ),
             @ApiResponse(responseCode = "401", description = "Invalid credentials or expired token",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data",
@@ -80,7 +82,8 @@ public class UserController {
     }
     @Operation(summary = "Refresh access token", description = "Generates a new access token using the refresh token")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully generated new access token"),
+            @ApiResponse(responseCode = "200", description = "Successfully generated new access token",
+            content = @Content(schema = @Schema(implementation = AccessToken.class))),
             @ApiResponse(responseCode = "401", description = "Expired or invalid refresh token",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
@@ -105,7 +108,21 @@ public class UserController {
         clearRefreshTokenCookie(response);
         return ResponseEntity.ok().build();
     }
-
+    @Operation(summary = "Reset user password", description = "Resets the password for the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully reset password"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/reset")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody NewPassword newPassword, Principal principal) {
+        String username = principal.getName();
+        User user = userService.getUserByUsername(username);
+        userService.updatePassword(newPassword.getPassword(),user);
+        return ResponseEntity.ok().build();
+    }
     private void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);

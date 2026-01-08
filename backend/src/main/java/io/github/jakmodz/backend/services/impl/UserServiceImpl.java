@@ -36,6 +36,20 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(newUser);
     }
+
+    @Override
+    public void updatePassword(String password,User user) {
+        logger.info("Updating user {}", user.getUsername());
+        String hashedPassword = encoder.encode(password);
+
+        if(hashedPassword.equals(user.getPassword())) {
+            //TODO throw error same password
+        }
+        logger.info("password changed for user: {}",user.getUsername());
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
+    }
+
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);

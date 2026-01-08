@@ -7,4 +7,5 @@ public interface UserService {
     void registerUser(UserCredentials user);
     User getUserByUsername(String username);
     User getUserById(Long id);
+    void updatePassword(String password,User user);
 }

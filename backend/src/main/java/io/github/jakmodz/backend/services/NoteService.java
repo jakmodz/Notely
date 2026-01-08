@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface NoteService {
-    void  createNote(NoteDto note, User user);
+    Note  createNote(NoteDto note, User user);
     List<Note> getAllNotes(User user);
     Note getNoteById(UUID noteId, User user);
     void updateNoteById(UUID noteId, NoteDto noteDto, User user);

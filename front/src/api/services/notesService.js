@@ -12,5 +12,8 @@ export default{
   },
   updateNote(uuid, noteData){
     return apiClient.put(`/notes/${uuid}`, noteData);
+  },
+  createNote(noteData){
+      return apiClient.post('/notes/create', noteData);
   }
 }

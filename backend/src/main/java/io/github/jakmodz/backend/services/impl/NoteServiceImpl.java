@@ -29,11 +29,12 @@ public class NoteServiceImpl implements NoteService {
 
     @Transactional
     @Override
-    public void createNote(NoteDto note, User user) {
+    public Note createNote(NoteDto note, User user) {
         logger.debug("Creating note: {}", note);
         Note newNote = transformToEntity(note);
         newNote.setUser(user);
         noteRepository.save(newNote);
+        return newNote;
     }
 
     @Override

@@ -36,11 +36,11 @@ public class NotesController {
         }
     )
     @PostMapping("/create")
-    public ResponseEntity<Void> createNote(@Valid @RequestBody NoteDto note, Principal principal) {
+    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto note, Principal principal) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);
-        noteService.createNote(note,user);
-        return ResponseEntity.ok().build();
+        NoteDto noteDto =noteService.transformToDto(noteService.createNote(note,user));
+        return ResponseEntity.ok(noteDto);
     }
     @Operation(summary = "Getting all notes ",description = "Getting all notes for user that sends request")
     @ApiResponses(value = {

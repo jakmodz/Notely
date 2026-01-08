@@ -1,6 +1,6 @@
+//TODO: component  for password with show/hide functionality
 <template>
   <div class="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-emerald-50 via-slate-50 to-slate-100 px-4">
-    
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
       <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-emerald-100/50 blur-3xl"></div>
       <div class="absolute -bottom-[10%] -right-[10%] w-[30%] h-[30%] rounded-full bg-blue-100/40 blur-3xl"></div>

@@ -19,7 +19,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 //TODO:reset password
-//TODO : docs
 @RestController
 @RequestMapping("/notes")
 public class NotesController {
@@ -88,6 +87,13 @@ public class NotesController {
         noteService.deleteNoteById(id, user);
         return ResponseEntity.ok().build();
     }
+    @Operation(summary = "Updating  note ",description = "Updating  note by id for user that sends request")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated note"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to update this note")
+        }
+    )
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateNote(Principal principal, @PathVariable UUID id, @Valid @RequestBody NoteDto noteDto) {
         String username = principal.getName();

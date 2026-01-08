@@ -9,5 +9,8 @@ export default {
   },
   register(credentials){
     return apiClient.post('/auth/register',credentials);
-  }
+  },
+  resetPassword(data){
+     return apiClient.post('/auth/reset', data);
+   }
 }

@@ -3,7 +3,7 @@ import { computed, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth.js";
 import { useThemeStore } from "@/stores/themes.js";
 import { useRouter } from "vue-router";
-
+import { ModalsContainer } from 'vue-final-modal';
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const router = useRouter();
@@ -62,6 +62,7 @@ const handleLogout = async () => {
     
     <router-view />
   </div>
+  <ModalsContainer />
 </template>
 
 <style>

@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(String password,User user) {
         logger.info("Updating user {}", user.getUsername());
+
         String hashedPassword = encoder.encode(password);
 
         if(hashedPassword.equals(user.getPassword())) {

@@ -3,7 +3,7 @@
     @click="$emit('view', note)"
     class="group relative bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-all duration-300 overflow-hidden cursor-pointer shadow-lg hover:shadow-xl hover:shadow-emerald-500/10"
   >
-    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/5 group-hover:to-transparent transition-all duration-300 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-linear-to-br from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/5 group-hover:to-transparent transition-all duration-300 pointer-events-none"></div>
     
     <div class="relative p-6">
       <div class="flex items-start justify-between gap-3 mb-3">

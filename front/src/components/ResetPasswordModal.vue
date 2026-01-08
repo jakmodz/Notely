@@ -36,7 +36,6 @@
         </div>
       </div>
       <form @submit.prevent="handleSubmit" class="p-6 space-y-4">
-        <!-- Error Message -->
         <div 
           v-if="errorMessage" 
           class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
@@ -49,7 +48,6 @@
           </div>
         </div>
 
-        <!-- Success Message -->
         <div 
           v-if="successMessage" 
           class="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl"
@@ -98,7 +96,6 @@
           </p>
         </div>
 
-        <!-- Confirm Password Field -->
         <div>
           <label for="confirmPassword" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
             Confirm Password

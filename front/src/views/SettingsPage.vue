@@ -23,7 +23,6 @@
               </div>
             </div>
           </div>
-          
           <div class="p-6 space-y-4">
             <div class="flex items-center justify-between">
               <div>
@@ -100,6 +99,14 @@
                 Change
               </button>
             </div>
+            <div class="flex justify-center items-center py-3 border-t border-slate-200 dark:border-slate-700">
+              <button 
+                @click="handleLogout"
+                class="px-4 py-2 bg-red-500 text-sm font-semibold text-white dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-200"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
 
@@ -113,11 +120,18 @@
 import { ref } from 'vue';
 import { useThemeStore } from '@/stores/themes';
 import { useAuthStore } from '@/stores/auth';
+import authService from "@/api/services/authService.js"
+import { useRouter } from "vue-router";
 
 const themeStore = useThemeStore();
 const authStore = useAuthStore();
+const router = useRouter();
 
 const emailNotifications = ref(true);
 const pushNotifications = ref(false);
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push('/login');
+};
 </script>
 

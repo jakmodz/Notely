@@ -86,9 +86,8 @@ const isLoading = ref(false);
 const errorMessage = ref('');
 const authStore = useAuthStore();
 
-const handleLogin = () =>{
+const  handleLogin = async () =>{
   isLoading.value = true;
-  errorMessage.value = '';
   apiClient.login({
     username: username.value,
     password: password.value

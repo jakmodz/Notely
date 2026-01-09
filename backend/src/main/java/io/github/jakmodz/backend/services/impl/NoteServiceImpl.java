@@ -22,7 +22,7 @@ import java.util.UUID;
 
 
 @Service
-
+//TODO: Pagination
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final Logger logger= LoggerFactory.getLogger(NoteServiceImpl.class);

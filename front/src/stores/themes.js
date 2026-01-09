@@ -16,7 +16,6 @@ export const useThemeStore = defineStore('theme', () => {
     } else {
       html.classList.remove("dark");
     }
-    
     localStorage.setItem("theme", newTheme);
     void html.offsetHeight;
   };

@@ -151,7 +151,6 @@ const closeDeleteModal = () => {
     showDeleteModal.value = false;
     noteToDelete.value = null;
 };
-
 const confirmDelete = async () => {
     if (!noteToDelete.value) return;
     

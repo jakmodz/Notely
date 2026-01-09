@@ -68,7 +68,10 @@ public class NoteServiceImpl implements NoteService {
         return noteByid;
     }
     @Override
-    @CacheEvict(value = "notes", key = "#user.id")
+    @Caching(evict = {
+            @CacheEvict(value = "note", key = "#noteId"),
+            @CacheEvict(value = "notes", key = "#user.id")
+    })
     public void deleteNoteById(UUID noteId, User user) {
         Note note = getNoteById(noteId, user);
         logger.debug("Deleting note: {}", note);

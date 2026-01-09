@@ -60,6 +60,7 @@ import { useRouter } from 'vue-router';
 import Note from './Note.vue';
 import ConfirmModal from './ConfirmModal.vue';
 import notesService from '@/api/services/notesService.js';
+import handleApiError from '@/util/apiError.js';
 
 const router = useRouter();
 
@@ -159,7 +160,7 @@ const confirmDelete = async () => {
         emit('noteDeleted', noteToDelete.value.uuid);
         closeDeleteModal();
     } catch (err) {
-        const errorMessage = err.response?.data?.message || 'Failed to delete note';
+        const errorMessage = handleApiError(err);
         closeDeleteModal();
     }
 };

@@ -69,7 +69,6 @@
           </div>
         </div>
 
-        <!-- Error Message -->
         <div v-if="errorMessage" class="mt-6">
           <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
             <div class="flex items-start gap-3">
@@ -115,7 +114,7 @@ import { useRouter } from 'vue-router';
 import NoteView from '@/components/NoteView.vue';
 import BackButton from '@/components/BackButton.vue';
 import notesService from '@/api/services/notesService.js';
-
+import handleApiError from '@/util/apiError.js';
 const router = useRouter();
 
 const noteData = ref({
@@ -149,16 +148,7 @@ const handleCreateNote = async () => {
     });
     router.push({ name: 'NoteDetails', params: { id: response.data.uuid } });
   } catch (error) {
-    console.error('Failed to create note:', error);
-    
-    if (error.response?.data?.message) {
-      errorMessage.value = error.response.data.message;
-    } else if (error.response?.status === 401) {
-      errorMessage.value = 'Session expired. Please log in again.';
-      router.push('/login');
-    } else {
-      errorMessage.value = 'Failed to create note. Please try again.';
-    }
+    errorMessage.value = handleApiError(error);
   } finally {
     isLoading.value = false;
   }

@@ -99,12 +99,7 @@ const  handleLogin = async () =>{
     router.push('/');
   }).catch(error => {
     isLoading.value = false;
-    if (error.response && error.response.data && error.response.data.message) {
-      errorMessage.value = error.response.data.message;
-    } else {
-      errorMessage.value = 'An unexpected error occurred. Please try again.';
-    }
-    console.error(error);
+    errorMessage.value = handleApiError(error);
   });
 }
 </script>

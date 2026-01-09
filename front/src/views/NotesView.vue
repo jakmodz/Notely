@@ -50,6 +50,7 @@
 import NotesList from "@/components/NotesList.vue";
 import { ref, onMounted } from 'vue';
 import notesService from '@/api/services/notesService.js';
+import handleApiError from '@/util/apiError.js';
 
 const notes = ref([]);
 const errorMessage = ref('');
@@ -63,8 +64,7 @@ const fetchNotes = async () => {
         const response = await notesService.getAllNotes();
         notes.value = response.data;
     } catch (error) {
-        console.error('Error fetching notes:', error);
-        errorMessage.value = 'Failed to load notes. Please try again later.';
+      errorMessage.value = handleApiError(error);
         notes.value = [];
     } finally {
         isLoading.value = false;

@@ -85,6 +85,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import authService from '@/api/services/authService';
 import PasswordWithShow from '@/components/PasswordWithShow.vue';
+import handleApiError from '@/util/apiError.js';
+
 const router = useRouter();
 const username = ref('');
 const password = ref('');
@@ -111,11 +113,7 @@ const handleRegister = () => {
     router.push('/login');
   }).catch(error => {
     isLoading.value = false;
-    if (error.response && error.response.data && error.response.data.message) {
-      errorMessage.value = error.response.data.message;
-    } else {
-      errorMessage.value = 'An error occurred during registration. Please try again.';
-    }
+    errorMessage.value = handleApiError(error);
   });
 };
 </script>

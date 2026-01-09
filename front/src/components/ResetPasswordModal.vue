@@ -120,6 +120,7 @@ import { useModal } from 'vue-final-modal';
 import { VueFinalModal } from 'vue-final-modal';
 import authService from '@/api/services/authService';
 import PasswordWithShow from '@/components/PasswordWithShow.vue';
+import handleApiError from '@/util/apiError.js';
 const emit = defineEmits(['close', 'success']);
 
 const formData = reactive({
@@ -203,15 +204,7 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Failed to reset password:', error);
     
-    if (error.response?.data?.message) {
-      errorMessage.value = error.response.data.message;
-    } else if (error.response?.status === 401) {
-      errorMessage.value = 'Session expired. Please log in again.';
-    } else if (error.response?.status === 400) {
-      errorMessage.value = 'Invalid password format. Please check the requirements.';
-    } else {
-      errorMessage.value = 'Failed to reset password. Please try again.';
-    }
+    errorMessage.value = handleApiError(error);
   } finally {
     isLoading.value = false;
   }

@@ -46,6 +46,9 @@
             required
             />
           </div>
+          <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+            Must be at least 8 characters with uppercase, lowercase, number, and special character
+          </p>
           <button 
             type="submit" 
             :disabled="isLoading"

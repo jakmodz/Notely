@@ -1,8 +1,8 @@
 spring:
     datasource:
-        url: jdbc:postgresql://localhost:5432/notely_db
-        username: notely_user
-        password: secure_password
+        url: "jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${DB_NAME:notely_db}"
+        username: "${DB_USER:notely_user}"
+        password: "${DB_PASSWORD:secure_password}"
         driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
@@ -10,3 +10,11 @@ spring:
       properties:
         hibernate:
           dialect: org.hibernate.dialect.PostgreSQLDialect
+    data:
+      redis:
+        host: "${REDIS_HOST:localhost}"
+        port: "${REDIS_PORT:6379}"
+      cache:
+        type: redis
+        redis:
+          time-to-live: 600000

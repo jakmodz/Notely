@@ -1,7 +1,6 @@
 package io.github.jakmodz.backend.services;
 
 import io.github.jakmodz.backend.dtos.NoteDto;
-import io.github.jakmodz.backend.dtos.UserDto;
 import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
 
@@ -12,7 +11,7 @@ public interface NoteService {
     Note  createNote(NoteDto note, User user);
     List<Note> getAllNotes(User user);
     Note getNoteById(UUID noteId, User user);
-    void updateNoteById(UUID noteId, NoteDto noteDto, User user);
+    Note updateNoteById(UUID noteId, NoteDto noteDto, User user);
     void deleteNoteById(UUID noteId, User user);
     default Note transformToEntity(NoteDto noteDto){
         Note  note = new Note();

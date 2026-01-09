@@ -3,6 +3,7 @@ package io.github.jakmodz.backend.models;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class Note {
     String content;
 
     @ManyToOne
+    @JsonBackReference
     User user;
 
     @CreationTimestamp

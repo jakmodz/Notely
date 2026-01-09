@@ -47,11 +47,15 @@ I treat this project as hello world for learning new technologies.
     ```bash
     cd backend
     ```
-2. Configure the database connection in `application.properties`:
+2. Configure  the database and redis connections in `docker-compose.yaml`:
     ```properties
-    spring.datasource.url=jdbc:postgresql://localhost:5432/notely
-    spring.datasource.username=your_username
-    spring.datasource.password=your_password
+        DB_HOST
+        DB_PORT
+        DB_NAME
+        DB_USERNAME
+        DB_PASSWORD
+        REDIS_HOST
+        REDIS_PORT
     ```
 3. Build and run the backend:
     ```bash

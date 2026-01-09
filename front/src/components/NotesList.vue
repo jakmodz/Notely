@@ -71,7 +71,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['noteDeleted']);
-
+//TODO: Sorting by  
 const sortBy = ref('modified');
 const sortOrder = ref('desc');
 const showDeleteModal = ref(false);
@@ -156,13 +156,10 @@ const confirmDelete = async () => {
     
     try {
         await notesService.deleteNote(noteToDelete.value.uuid);
-        console.log('Note deleted successfully:', noteToDelete.value.uuid);
         emit('noteDeleted', noteToDelete.value.uuid);
         closeDeleteModal();
     } catch (err) {
-        console.error('Error deleting note:', err);
         const errorMessage = err.response?.data?.message || 'Failed to delete note';
-        alert(errorMessage);
         closeDeleteModal();
     }
 };

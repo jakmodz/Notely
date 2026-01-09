@@ -19,6 +19,7 @@ I treat this project as hello world for learning new technologies.
 - **Routing**: Vue Router
 - **HTTP Client**: Axios
 
+
 ### Backend
 - **Framework**: Spring Boot 4.0.1
 - **Language**: Java 21
@@ -28,10 +29,11 @@ I treat this project as hello world for learning new technologies.
 - **Security**: Spring Security with Argon2
 - **API Docs**: SpringDoc OpenAPI (Swagger)
 - **Build Tool**: Maven
+- **Caching**: Redis
 
 ### Infrastructure
 - **Database**: PostgreSQL (Docker)
-- **Caching**: Redis (Planned)
+- **Caching**: Redis 
 - **Deployment**: Docker & Docker Compose
 
 ## Setup Instructions

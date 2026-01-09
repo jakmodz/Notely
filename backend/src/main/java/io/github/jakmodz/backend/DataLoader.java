@@ -2,6 +2,7 @@ package io.github.jakmodz.backend;
 
 import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.dtos.UserCredentials;
+import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.repositories.UserRepository;
 import io.github.jakmodz.backend.services.impl.NoteServiceImpl;
@@ -13,105 +14,139 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 @Component
 @Transactional
 public class DataLoader implements CommandLineRunner {
-    private final String MARKDOWN ="""
-# Heading 1
-This is a paragraph with **bold text** and *italic text* and ***bold italic***.
-## Heading 2
-Here's a [link to Google](https://google.com) and some `inline code`.
-### Heading 3
-#### Heading 4
-### Lists
-**Unordered list:**
-- Item one
-- Item two
-- Nested item
-- Another nested item
-- Item three
 
-**Ordered list:**
-            1. First item
-2. Second item
-3. Third item
-
-### Code Block
-
-```javascript
-    function hello() {
-        console.log("Hello, World!");
-        return true;
-    }
-```
-### Blockquote
-> This is a blockquote.
-> It can span multiple lines.
-### Task List
-- [x] Completed task
-- [ ] Incomplete task
-- [ ] Another task
-
-### Table
-
-| Feature | Status |Priority |
-|---------|--------|----------|
-| Dark Mode | ✅ | High |
-| Search | 🚧 | Medium |
-| Export | ❌ | Low |
-
-### Horizontal Rule
----
-### Emphasis
-This is **bold**, this is *italic*, and this is ~~strikethrough~~.
-**Random Photo:**
-### Images
-![Random](https://picsum.photos/600/300)
-
-![Alt text](https://via.placeholder.com/150)
----
-    That's it! If you can see all these elements properly styled, markdown is working correctly.""";
     private final Logger logger = LoggerFactory.getLogger(DataLoader.class);
     private final UserServiceImpl userService;
     private final NoteServiceImpl noteService;
     private final UserRepository userRepository;
+    private final Random random = new Random();
+
+    private static final String MARKDOWN = """
+            # Sample Markdown Note
+
+            This is a sample note written in **Markdown** format.
+
+            ## Features
+
+            - **Bold Text**
+            - *Italic Text*
+            - `Inline Code`
+            - [Links](https://example.com)
+            - Images
+
+            ![Sample Image](https://via.placeholder.com/150)
+
+            ## Code Block
+
+            ```python
+            def hello_world():
+                print("Hello, World!")
+            ```
+
+            ## Lists
+
+            1. First item
+            2. Second item
+               - Subitem A
+               - Subitem B
+            3. Third item
+
+            > This is a blockquote.
+
+            Enjoy using Markdown for your notes!
+            """;
+    // Sample content arrays for generating diverse notes
+    private final String[] noteTitles = {
+            "Meeting Notes", "Project Ideas", "Shopping List", "Daily Journal",
+            "Code Snippets", "Book Notes", "Travel Plans", "Recipe Collection",
+            "Workout Routine", "Budget Planning", "Learning Resources", "Goals for 2024",
+            "Client Meeting", "Bug Report", "Feature Request", "Design Ideas",
+            "Research Notes", "Interview Questions", "Team Updates", "Personal Reflections"
+    };
+
+    private final String[] noteContents = {
+            "# Important Points\n- First point\n- Second point\n- Third point",
+            "## Task List\n- [ ] Task one\n- [x] Task two\n- [ ] Task three",
+            "```java\npublic void example() {\n    System.out.println(\"Hello\");\n}\n```",
+            "This is a simple note with some **bold text** and *italic text*.",
+            "> Remember to review this later\n\nSome additional notes here.",
+            "### Weekly Goals\n1. Complete project\n2. Review code\n3. Write documentation",
+            MARKDOWN,
+            "## Quick Thoughts\nJust jotting down some ideas for later review.",
+            "### Important Links\n- [Google](https://google.com)\n- [GitHub](https://github.com)",
+            "**Priority:** High\n\nNeed to follow up on this ASAP."
+    };
+
     @Autowired
     public DataLoader(UserServiceImpl userService, NoteServiceImpl noteService, UserRepository userRepository) {
         this.userService = userService;
         this.noteService = noteService;
         this.userRepository = userRepository;
     }
+
     private NoteDto createSampleNote(String title, String content) {
         NoteDto noteDto = new NoteDto();
         noteDto.setTitle(title);
         noteDto.setContent(content);
         return noteDto;
     }
-    public void run(String... args) throws Exception {
-        if(userRepository.findAll().isEmpty()) {
-            UserCredentials user1Creds = new UserCredentials("user1", "password1");
-            UserCredentials user2Creds = new UserCredentials("user2", "password2");
-            NoteDto note1 = createSampleNote("Title 1", "### Content 1");
-            NoteDto note2 = createSampleNote("Title 2", "Content 2");
-            NoteDto note3 = createSampleNote("Markdown Sample", MARKDOWN);
 
+    private void createManyUsersAndNotes() {
+        logger.info("========================================");
+        logger.info("POPULATING DATABASE WITH TEST DATA");
+        logger.info("========================================");
+
+        List<User> users = new ArrayList<>();
+        int userCount = 10;
+        int notesPerUser = 2000;
+
+        logger.info("Creating {} users...", userCount);
+        for (int i = 1; i <= userCount; i++) {
             try {
-                userService.registerUser(user1Creds);
-                userService.registerUser(user2Creds);
-                logger.info("Default users created: {}, {}", user1Creds.getUsername(), user2Creds.getUsername());
-
-                User user1 = userRepository.findByUsername(user1Creds.getUsername());
-                User user2 = userRepository.findByUsername(user2Creds.getUsername());
-
-
-                noteService.createNote(note1, user1);
-                noteService.createNote(note2, user2);
-                noteService.createNote(note3, user1);
-                noteService.createNote(note3, user2);
-                logger.info("Sample notes created for default users");
+                UserCredentials credentials = new UserCredentials("user" + i, "password" + i);
+                userService.registerUser(credentials);
+                User user = userRepository.findByUsername(credentials.getUsername());
+                users.add(user);
             } catch (Exception e) {
-                logger.error("Error creating default users: {}", e.getMessage());
+                logger.error("Error creating user {}: {}", i, e.getMessage());
             }
         }
+        logger.info("✓ Created {} users", users.size());
+
+        logger.info("Creating {} notes per user...", notesPerUser);
+        int totalNotes = 0;
+        for (User user : users) {
+            for (int i = 0; i < notesPerUser; i++) {
+                try {
+                    String title = noteTitles[random.nextInt(noteTitles.length)] + " #" + (i + 1);
+                    String content = noteContents[random.nextInt(noteContents.length)];
+                    NoteDto noteDto = createSampleNote(title, content);
+                    noteService.createNote(noteDto, user);
+                    totalNotes++;
+                } catch (Exception e) {
+                    logger.error("Error creating note for user {}: {}", user.getUsername(), e.getMessage());
+                }
+            }
+        }
+        logger.info("✓ Created {} total notes", totalNotes);
+        logger.info("========================================");
     }
+
+
+
+    public void run(String... args) throws Exception {
+        if(userRepository.findAll().isEmpty()) {
+            createManyUsersAndNotes();
+        } else {
+            logger.info("Database already contains data, skipping initialization");
+        };
+    }
+
 }

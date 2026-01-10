@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = encoder.encode(password);
 
         if(hashedPassword.equals(user.getPassword())) {
-            //TODO throw error same password
+            throw new IllegalArgumentException("New password must be different from the old one");
         }
         logger.info("password changed for user: {}",user.getUsername());
         user.setPassword(hashedPassword);

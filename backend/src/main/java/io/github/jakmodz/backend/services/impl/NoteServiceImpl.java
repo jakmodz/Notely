@@ -25,8 +25,6 @@ import java.util.UUID;
 
 
 @Service
-//TODO: Pagination
-//TODO: Search
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final Logger logger= LoggerFactory.getLogger(NoteServiceImpl.class);

@@ -109,6 +109,10 @@
 
 
 <script setup>
+//TODO: pinnned notes
+// TODO: pagination or infinite scroll
+// TODO: search bar
+//TODO: Notebooks as groups of note
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import NotesList from '@/components/NotesList.vue';
@@ -129,7 +133,7 @@ const fetchNotes = async () => {
         notes.value = response.data;
     } catch (error) {
         errorMessage.value = handleApiError(error);
-        notes.value = [];
+      notes.value = [];
     } finally {
         isLoading.value = false;
     }

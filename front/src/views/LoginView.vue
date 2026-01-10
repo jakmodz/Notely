@@ -78,7 +78,7 @@ import { useRouter } from 'vue-router';
 import apiClient from '@/api/services/authService';
 import { useAuthStore } from '@/stores/auth.js';
 import PasswordWithShow from '@/components/PasswordWithShow.vue';
-
+import  handleApiError  from '@/util/apiError.js';
 const router = useRouter();
 const username = ref('');
 const password = ref('');

@@ -87,7 +87,6 @@
         />
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -153,15 +152,16 @@ const closeDeleteModal = () => {
     showDeleteModal.value = false;
 };
 
-const confirmDelete = () => {
-    notesService.deleteNote(note.value.uuid)
-        .then(() => {
-             router.push("/");
-        })
-        .catch(err => {
-            console.error('Error deleting note:', err);
-            error.value = err.response?.data?.message || 'Failed to delete note';
-        });
+const confirmDelete = async () => {
+    try {
+        await notesService.deleteNote(note.value.uuid);
+        closeDeleteModal(); 
+        router.push({ name: 'Home' }); 
+    } catch (err) {
+        console.error('Error deleting note:', err);
+        error.value = err.response?.data?.message || 'Failed to delete note';
+        closeDeleteModal();
+    }
 };
 
 watch(() => route.params.id, (newId) => {

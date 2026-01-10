@@ -98,21 +98,23 @@
                         <p class="text-slate-500 dark:text-slate-400">Create your first note to get started on your journey of organized thoughts!</p>
                     </div>
                 </div>
-                
                 <div v-else>
-                  <NotesList :notes="notes" @noteDeleted="handleNoteDeleted"/>
+                    <NotesList 
+                        :notes="notes" 
+                        :pagination="{ page: 0, size: notes.length, totalPages: 1, totalElements: notes.length, empty: notes.length === 0 }"
+                        :currentSort="{ sortBy: 'created', sortDirection: 'DESC' }"
+                        :viewOnly="true"
+                        @noteDeleted="handleNoteDeleted"
+                    />
                 </div>
+
             </div>
         </div>
     </div>
 </template>
-
-
-<script setup>
 //TODO: pinnned notes
-// TODO: pagination or infinite scroll
-// TODO: search bar
 //TODO: Notebooks as groups of note
+<script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import NotesList from '@/components/NotesList.vue';
@@ -129,18 +131,18 @@ const fetchNotes = async () => {
     errorMessage.value = '';
     
     try {
-        const response = await notesService.getAllNotes();
-        notes.value = response.data;
+        const response = await notesService.getAllNotes(0, 12, 'created', 'DESC');
+        notes.value = response.data.items || response.data;
     } catch (error) {
         errorMessage.value = handleApiError(error);
-      notes.value = [];
+        notes.value = [];
     } finally {
         isLoading.value = false;
     }
 };
 
 const handleNoteDeleted = (deletedNoteUuid) => {
-    notes.value = notes.value.filter(note => note.uuid !== deletedNoteUuid);
+  notes.value = notes.value.filter(note => note.uuid !== deletedNoteUuid);
 };
 
 onMounted(() => {

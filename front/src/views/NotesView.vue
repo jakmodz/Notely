@@ -30,7 +30,7 @@
         </div>
     </div>
     
-    <div v-else-if="notes.length === 0" class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2rem] shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-slate-100 dark:border-slate-700 text-center">
+    <div v-else-if="paginationData.totalElements === 0" class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2rem] shadow-xl shadow-slate-200/30 dark:shadow-none p-12 border border-slate-100 dark:border-slate-700 text-center">
         <div class="max-w-md mx-auto">
             <div class="w-24 h-24 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,29 +42,79 @@
         </div>
     </div>
     
-    <NotesList v-else :notes="notes" @noteDeleted="handleNoteDeleted" />
+    <NotesList 
+        v-else 
+        :notes="notes" 
+        :pagination="paginationData"
+        :currentSort="{ sortBy, sortDirection }"
+        @noteDeleted="handleNoteDeleted"
+        @pageChange="handlePageChange"
+        @sortChange="handleSortChange"
+        @pageSizeChange="handlePageSizeChange"
+    />
 </div>
 </template>
 
 <script setup>
 import NotesList from "@/components/NotesList.vue";
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import notesService from '@/api/services/notesService.js';
 import handleApiError from '@/util/apiError.js';
+
+const router = useRouter();
+const route = useRoute();
 
 const notes = ref([]);
 const errorMessage = ref('');
 const isLoading = ref(false);
+
+const page = ref(parseInt(route.query.page) || 0);
+const size = ref(parseInt(route.query.size) || 12);
+const sortBy = ref(route.query.sortBy || 'created');
+const sortDirection = ref(route.query.sortDirection || 'DESC');
+
+const paginationData = ref({
+    page: page.value,
+    size: size.value,
+    totalPages: 0,
+    totalElements: 0,
+    empty: true
+});
+
+const updateUrlParams = () => {
+    router.push({
+        query: {
+            page: page.value,
+            size: size.value,
+            sortBy: sortBy.value,
+            sortDirection: sortDirection.value
+        }
+    });
+};
 
 const fetchNotes = async () => {
     isLoading.value = true;
     errorMessage.value = '';
     
     try {
-        const response = await notesService.getAllNotes();
-        notes.value = response.data;
+        const response = await notesService.getAllNotes(
+            page.value,
+            size.value,
+            sortBy.value,
+            sortDirection.value
+        );
+        
+        notes.value = response.data.items;
+        paginationData.value = {
+            page: response.data.page,
+            size: response.data.size,
+            totalPages: response.data.totalPages,
+            totalElements: response.data.totalElements,
+            empty: response.data.empty
+        };
     } catch (error) {
-      errorMessage.value = handleApiError(error);
+        errorMessage.value = handleApiError(error);
         notes.value = [];
     } finally {
         isLoading.value = false;
@@ -73,7 +123,62 @@ const fetchNotes = async () => {
 
 const handleNoteDeleted = (deletedNoteUuid) => {
     notes.value = notes.value.filter(note => note.uuid !== deletedNoteUuid);
+    paginationData.value.totalElements--;
+    
+    if (notes.value.length === 0 && page.value > 0) {
+        page.value--;
+        updateUrlParams();
+        fetchNotes();
+    } else if (notes.value.length === 0) {
+        fetchNotes();
+    }
 };
+
+const handlePageChange = (newPage) => {
+    page.value = newPage;
+    updateUrlParams();
+    fetchNotes();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const handleSortChange = ({ sortBy: newSortBy, sortDirection: newSortDirection }) => {
+    sortBy.value = newSortBy;
+    sortDirection.value = newSortDirection;
+    page.value = 0;
+    updateUrlParams();
+    fetchNotes();
+};
+
+const handlePageSizeChange = (newSize) => {
+    size.value = newSize;
+    page.value = 0;
+    updateUrlParams();
+    fetchNotes();
+};
+
+watch(() => route.query, (newQuery, oldQuery) => {
+    if (!oldQuery) return;
+    
+    const newPage = parseInt(newQuery.page) || 0;
+    const newSize = parseInt(newQuery.size) || 12;
+    const newSortBy = newQuery.sortBy || 'created';
+    const newSortDirection = newQuery.sortDirection || 'DESC';
+    
+    const isExternalChange = 
+        newPage !== page.value || 
+        newSize !== size.value || 
+        newSortBy !== sortBy.value || 
+        newSortDirection !== sortDirection.value;
+    
+    if (isExternalChange) {
+        page.value = newPage;
+        size.value = newSize;
+        sortBy.value = newSortBy;
+        sortDirection.value = newSortDirection;
+        
+        fetchNotes();
+    }
+}, { deep: true });
 
 onMounted(() => {
     fetchNotes();

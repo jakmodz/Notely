@@ -1,23 +1,23 @@
 <template>
     <div class="my-2">
-        <div class="flex flex-wrap items-center gap-3 mb-6 p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-100 dark:border-slate-700">
+        <div v-if="!viewOnly" class="flex flex-wrap items-center gap-3 mb-6 p-4 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-100 dark:border-slate-700">
             <label class="text-sm font-medium text-slate-600 dark:text-slate-400">Sort by:</label>
             <select 
                 v-model="sortBy"
+                @change="onSortChange"
                 class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer hover:border-emerald-500"
             >
                 <option value="modified">Last Modified</option>
                 <option value="created">Date Created</option>
                 <option value="title">Title (A-Z)</option>
-                <option value="content">Content</option>
             </select>
             
             <button 
                 @click="toggleSortOrder"
                 class="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-emerald-500 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                :title="sortOrder === 'asc' ? 'Ascending order' : 'Descending order'"
+                :title="sortOrder === 'ASC' ? 'Ascending order' : 'Descending order'"
             >
-                <svg v-if="sortOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg v-if="sortOrder === 'DESC'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,20 +25,102 @@
                 </svg>
             </button>
 
+            <label class="text-sm font-medium text-slate-600 dark:text-slate-400 ml-4">Per page:</label>
+            <select 
+                :value="pagination.size"
+                @change="$emit('pageSizeChange', Number($event.target.value))"
+                class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer hover:border-emerald-500"
+            >
+                <option value="6">6</option>
+                <option value="12">12</option>
+                <option value="24">24</option>
+                <option value="48">48</option>
+            </select>
+
             <div class="text-xs text-slate-500 dark:text-slate-500 ml-auto">
-                {{ notes.length }} {{ notes.length === 1 ? 'note' : 'notes' }}
+                {{ pagination.totalElements }} {{ pagination.totalElements === 1 ? 'note' : 'notes' }}
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Note 
-                v-for="note in sortedNotes" 
+                v-for="note in notes" 
                 :key="note.uuid"
                 :note="note"
                 @view="handleView"
                 @edit="handleEdit"
                 @delete="openDeleteModal"
             />
+        </div>
+
+        <!-- Pagination Controls -->
+        <div v-if="pagination.totalPages > 1" class="mt-8 flex items-center justify-center gap-2">
+            <button
+                @click="goToPage(0)"
+                :disabled="pagination.page === 0"
+                class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                title="First page"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <button
+                @click="goToPage(pagination.page - 1)"
+                :disabled="pagination.page === 0"
+                class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                title="Previous page"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <!-- Page Numbers -->
+            <div class="flex gap-2">
+                <button
+                    v-for="pageNum in visiblePages"
+                    :key="pageNum"
+                    @click="goToPage(pageNum)"
+                    :class="[
+                        'px-4 py-2 rounded-xl font-medium transition-all',
+                        pageNum === pagination.page
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ]"
+                >
+                    {{ pageNum + 1 }}
+                </button>
+            </div>
+
+            <button
+                @click="goToPage(pagination.page + 1)"
+                :disabled="pagination.page >= pagination.totalPages - 1"
+                class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                title="Next page"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            <button
+                @click="goToPage(pagination.totalPages - 1)"
+                :disabled="pagination.page >= pagination.totalPages - 1"
+                class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                title="Last page"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
+        <div v-if="pagination.totalPages > 1" class="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+            Page {{ pagination.page + 1 }} of {{ pagination.totalPages }}
+            <span class="mx-2">•</span>
+            Showing {{ notes.length }} of {{ pagination.totalElements }} notes
         </div>
 
         <ConfirmModal
@@ -68,71 +150,68 @@ const props = defineProps({
     notes: {
         type: Array,
         required: true
+    },
+    pagination: {
+        type: Object,
+        required: true
+    },
+    currentSort: {
+        type: Object,
+        default: () => ({ sortBy: 'created', sortDirection: 'DESC' })
+    },
+    viewOnly: {
+        type: Boolean,
+        default: false
     }
 });
 
-const emit = defineEmits(['noteDeleted']);
-//TODO: Sorting by  
-const sortBy = ref('modified');
-const sortOrder = ref('desc');
+const emit = defineEmits(['noteDeleted', 'pageChange', 'sortChange', 'pageSizeChange']);
+
+const sortBy = ref(props.currentSort.sortBy);
+const sortOrder = ref(props.currentSort.sortDirection);
 const showDeleteModal = ref(false);
 const noteToDelete = ref(null);
 
-const sortedNotes = computed(() => {
-    if (!props.notes || props.notes.length === 0) return [];
+watch(() => props.currentSort, (newSort) => {
+    sortBy.value = newSort.sortBy;
+    sortOrder.value = newSort.sortDirection;
+}, { deep: true });
+
+const visiblePages = computed(() => {
+    const totalPages = props.pagination.totalPages;
+    const currentPage = props.pagination.page;
+    const maxVisible = 5;
     
-    const notesCopy = [...props.notes];
+    if (totalPages <= maxVisible) {
+        return Array.from({ length: totalPages }, (_, i) => i);
+    }
     
-    return notesCopy.sort((a, b) => {
-        let comparison = 0;
-        
-        switch (sortBy.value) {
-            case 'title':
-                comparison = (a.title || '').localeCompare(b.title || '', undefined, { 
-                    sensitivity: 'base',
-                    ignorePunctuation: true 
-                });
-                break;
-            case 'created':
-                comparison = new Date(a.created) - new Date(b.created);
-                break;
-            case 'modified':
-                comparison = new Date(a.modified) - new Date(b.modified);
-                break;
-            case 'content':
-                comparison = (a.content || '').localeCompare(b.content || '', undefined, { 
-                    sensitivity: 'base',
-                    ignorePunctuation: true 
-                });
-                break;
-            default:
-                comparison = new Date(a.modified) - new Date(b.modified);
-        }
-        
-        return sortOrder.value === 'asc' ? comparison : -comparison;
-    });
+    let start = Math.max(0, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible);
+    
+    if (end - start < maxVisible) {
+        start = Math.max(0, end - maxVisible);
+    }
+    
+    return Array.from({ length: end - start }, (_, i) => start + i);
 });
 
+const goToPage = (page) => {
+    if (page >= 0 && page < props.pagination.totalPages) {
+        emit('pageChange', page);
+    }
+};
+
 const toggleSortOrder = () => {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
-    saveSortPreference();
+    sortOrder.value = sortOrder.value === 'ASC' ? 'DESC' : 'ASC';
+    onSortChange();
 };
 
-const saveSortPreference = () => {
-    localStorage.setItem('notesSortBy', sortBy.value);
-    localStorage.setItem('notesSortOrder', sortOrder.value);
-};
-
-const loadSortPreference = () => {
-    const savedSortBy = localStorage.getItem('notesSortBy');
-    const savedSortOrder = localStorage.getItem('notesSortOrder');
-    
-    if (savedSortBy) {
-        sortBy.value = savedSortBy;
-    }
-    if (savedSortOrder) {
-        sortOrder.value = savedSortOrder;
-    }
+const onSortChange = () => {
+    emit('sortChange', {
+        sortBy: sortBy.value,
+        sortDirection: sortOrder.value
+    });
 };
 
 const handleView = (note) => {
@@ -164,12 +243,8 @@ const confirmDelete = async () => {
         closeDeleteModal();
     }
 };
-
-watch(sortBy, () => {
-    saveSortPreference();
-});
-
 onMounted(() => {
-    loadSortPreference();
+    sortBy.value = props.currentSort.sortBy;
+    sortOrder.value = props.currentSort.sortDirection;
 });
 </script>

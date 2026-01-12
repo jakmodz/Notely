@@ -1,5 +1,6 @@
 package io.github.jakmodz.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,10 +29,11 @@ public class User {
     String password;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     Set<Note> notes;
 
     @OneToMany
+    @JsonIgnore
     Set<Notebook> notebooks;
 
     @CreationTimestamp

@@ -1,6 +1,7 @@
 package io.github.jakmodz.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,12 +32,12 @@ public class Notebook {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_notebook_id")
-    @JsonBackReference
+    @JsonIgnore
     private Notebook parentNotebook;
 
     @CreationTimestamp

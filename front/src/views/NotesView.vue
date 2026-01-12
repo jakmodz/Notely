@@ -106,8 +106,8 @@ const fetchNotes = async () => {
             page.value,
             size.value,
             sortBy.value,
-            search.value,
-            sortDirection.value
+            sortDirection.value,
+            search.value
         );
         
         notes.value = response.data.items;

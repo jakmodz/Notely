@@ -131,7 +131,7 @@ const fetchNotes = async () => {
     errorMessage.value = '';
     
     try {
-        const response = await notesService.getAllNotes(0, 12, 'created', 'DESC');
+        const response = await notesService.getAllNotes();
         notes.value = response.data.items || response.data;
     } catch (error) {
         errorMessage.value = handleApiError(error);

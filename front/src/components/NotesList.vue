@@ -42,7 +42,7 @@
                 "
                 v-model="localSearch"
                 @input="onSearchInput"
-                placeholder="Search"
+                placeholder="Search for title"
             />
 
             <div class="text-xs text-slate-500 dark:text-slate-500 ml-auto">
@@ -165,7 +165,7 @@ const props = defineProps({
     }
 });
 
-const DELAY = import.meta.env.VITE_SEARCH_DELAY || 300; 
+const DELAY = import.meta.env.VITE_SEARCH_DELAY || 1000; 
 const emit = defineEmits(['noteDeleted', 'pageChange', 'sortChange', 'pageSizeChange','searchChange']);
 
 const localSearch = ref(props.search || '');

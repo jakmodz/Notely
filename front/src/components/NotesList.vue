@@ -36,6 +36,14 @@
                 <option value="24">24</option>
                 <option value="48">48</option>
             </select>
+            <input
+                class="text-center text-slate-600 dark:text-slate-400 ml-4 
+                px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer hover:border-emerald-500
+                "
+                v-model="localSearch"
+                @input="onSearchInput"
+                placeholder="Search"
+            />
 
             <div class="text-xs text-slate-500 dark:text-slate-500 ml-auto">
                 {{ pagination.totalElements }} {{ pagination.totalElements === 1 ? 'note' : 'notes' }}
@@ -122,20 +130,8 @@
             <span class="mx-2">•</span>
             Showing {{ notes.length }} of {{ pagination.totalElements }} notes
         </div>
-
-        <ConfirmModal
-            :isOpen="showDeleteModal"
-            title="Delete Note"
-            :message="`Are you sure you want to delete '${noteToDelete?.title || 'this note'}'? This action cannot be undone.`"
-            confirmText="Delete"
-            cancelText="Cancel"
-            variant="danger"
-            @confirm="confirmDelete"
-            @cancel="closeDeleteModal"
-        />
     </div>
 </template>
-
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -162,15 +158,34 @@ const props = defineProps({
     viewOnly: {
         type: Boolean,
         default: false
+    },
+    search: {
+        type: String,
+        default: ''
     }
 });
 
-const emit = defineEmits(['noteDeleted', 'pageChange', 'sortChange', 'pageSizeChange']);
+const DELAY = import.meta.env.VITE_SEARCH_DELAY || 300; 
+const emit = defineEmits(['noteDeleted', 'pageChange', 'sortChange', 'pageSizeChange','searchChange']);
 
+const localSearch = ref(props.search || '');
 const sortBy = ref(props.currentSort.sortBy);
 const sortOrder = ref(props.currentSort.sortDirection);
 const showDeleteModal = ref(false);
 const noteToDelete = ref(null);
+
+watch(() => props.search, (newValue) => {
+    localSearch.value = newValue || '';
+});
+
+let timeout;
+const onSearchInput = (event) => {
+    localSearch.value = event.target.value;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        emit('searchChange', event.target.value);
+    }, DELAY);
+};
 
 watch(() => props.currentSort, (newSort) => {
     sortBy.value = newSort.sortBy;
@@ -231,6 +246,7 @@ const closeDeleteModal = () => {
     showDeleteModal.value = false;
     noteToDelete.value = null;
 };
+
 const confirmDelete = async () => {
     if (!noteToDelete.value) return;
     
@@ -243,6 +259,7 @@ const confirmDelete = async () => {
         closeDeleteModal();
     }
 };
+
 onMounted(() => {
     sortBy.value = props.currentSort.sortBy;
     sortOrder.value = props.currentSort.sortDirection;

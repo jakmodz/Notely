@@ -4,7 +4,7 @@ export default{
   getNote(uuid){
     return apiClient.get(`/notes/${uuid}`);
   },
-  getAllNotes(page = 0, size = 12, sortBy = 'created', sortDirection = 'DESC'){
+  getAllNotes(page = 0, size = 12, sortBy = 'created', sortDirection = 'DESC',searchValue=''){
     return apiClient.get('/notes', {
       params: { page, size, sortBy, sortDirection }
     });
@@ -18,5 +18,4 @@ export default{
   createNote(noteData){
       return apiClient.post('/notes/create', noteData);
   }
-  
 }

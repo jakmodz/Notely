@@ -42,15 +42,17 @@
         </div>
     </div>
     
-    <NotesList 
+    <NotesList  
         v-else 
         :notes="notes" 
         :pagination="paginationData"
         :currentSort="{ sortBy, sortDirection }"
+        :search="search"
         @noteDeleted="handleNoteDeleted"
         @pageChange="handlePageChange"
         @sortChange="handleSortChange"
         @pageSizeChange="handlePageSizeChange"
+        @searchChange="handleSearchChange"
     />
 </div>
 </template>
@@ -73,6 +75,7 @@ const page = ref(parseInt(route.query.page) || 0);
 const size = ref(parseInt(route.query.size) || 12);
 const sortBy = ref(route.query.sortBy || 'created');
 const sortDirection = ref(route.query.sortDirection || 'DESC');
+const search = ref(route.query.search || '');
 
 const paginationData = ref({
     page: page.value,
@@ -88,7 +91,8 @@ const updateUrlParams = () => {
             page: page.value,
             size: size.value,
             sortBy: sortBy.value,
-            sortDirection: sortDirection.value
+            sortDirection: sortDirection.value,
+            search: search.value
         }
     });
 };
@@ -102,6 +106,7 @@ const fetchNotes = async () => {
             page.value,
             size.value,
             sortBy.value,
+            search.value,
             sortDirection.value
         );
         
@@ -156,6 +161,13 @@ const handlePageSizeChange = (newSize) => {
     fetchNotes();
 };
 
+const handleSearchChange = (newSearch) => {
+    search.value = newSearch;
+    page.value = 0;
+    updateUrlParams();
+    fetchNotes();
+};
+
 watch(() => route.query, (newQuery, oldQuery) => {
     if (!oldQuery) return;
     
@@ -163,18 +175,21 @@ watch(() => route.query, (newQuery, oldQuery) => {
     const newSize = parseInt(newQuery.size) || 12;
     const newSortBy = newQuery.sortBy || 'created';
     const newSortDirection = newQuery.sortDirection || 'DESC';
+    const newSearch = newQuery.search || '';
     
     const isExternalChange = 
         newPage !== page.value || 
         newSize !== size.value || 
         newSortBy !== sortBy.value || 
-        newSortDirection !== sortDirection.value;
+        newSortDirection !== sortDirection.value ||
+        newSearch !== search.value;
     
     if (isExternalChange) {
         page.value = newPage;
         size.value = newSize;
         sortBy.value = newSortBy;
         sortDirection.value = newSortDirection;
+        search.value = newSearch;
         
         fetchNotes();
     }

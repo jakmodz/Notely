@@ -17,4 +17,5 @@ public class NoteDto {
     private String title;
     private String content;
     private LocalDateTime created;
+    private LocalDateTime modified;
 }

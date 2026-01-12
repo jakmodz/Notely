@@ -29,6 +29,7 @@ public interface NoteService {
         noteDto.setContent(note.getContent());
         noteDto.setUuid(note.getUuid());
         noteDto.setCreated(note.getModified());
+        noteDto.setModified(note.getModified());
         return noteDto;
     }
 

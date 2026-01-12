@@ -130,6 +130,16 @@
             <span class="mx-2">•</span>
             Showing {{ notes.length }} of {{ pagination.totalElements }} notes
         </div>
+        <ConfirmModal
+                   :isOpen="showDeleteModal"
+                   title="Delete Note"
+                   message="Are you sure you want to delete this note? This action cannot be undone."
+                   confirmText="Delete"
+                   cancelText="Cancel"
+                   variant="danger"
+                   @confirm="confirmDelete"
+                   @cancel="closeDeleteModal"
+               />
     </div>
 </template>
 <script setup>

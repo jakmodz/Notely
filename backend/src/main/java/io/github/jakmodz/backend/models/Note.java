@@ -24,7 +24,7 @@ public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID uuid;
-
+    @Column(columnDefinition = "TEXT")
     String title;
     @Column(columnDefinition = "TEXT")
     String content;
@@ -32,6 +32,9 @@ public class Note {
     @ManyToOne
     @JsonBackReference
     User user;
+
+    @OneToOne
+    Notebook notebook;
 
     @CreationTimestamp
     LocalDateTime created;

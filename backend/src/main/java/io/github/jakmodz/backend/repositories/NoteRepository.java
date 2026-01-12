@@ -12,5 +12,7 @@ import java.util.UUID;
 
 public interface NoteRepository extends JpaRepository<Note, UUID> {
     List<Note> findByUser(User user);
-     Page<Note> findByUser(User user, Pageable pageable);
+    Page<Note> findByUser(User user, Pageable pageable);
+    Page<Note> findByUserAndTitleContainingIgnoreCaseOrContentContainingIgnoreCase(
+            User user, String title, String content, Pageable pageable);
 }

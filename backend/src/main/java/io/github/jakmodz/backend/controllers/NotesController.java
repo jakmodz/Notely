@@ -60,7 +60,8 @@ public class NotesController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "created") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDirection
+            @RequestParam(defaultValue = "DESC") String sortDirection,
+            @RequestParam(defaultValue = "") String searchValue
     ) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);
@@ -70,7 +71,8 @@ public class NotesController {
                 : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        PaginationResult<NoteDto> result = noteService.getAllNotesPaginated(user, pageable);
+
+        PaginationResult<NoteDto> result = noteService.getAllNotesPaginated(user, pageable, searchValue);
 
         return ResponseEntity.ok(result);
     }

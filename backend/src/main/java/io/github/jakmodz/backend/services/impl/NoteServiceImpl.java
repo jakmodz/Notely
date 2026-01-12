@@ -88,10 +88,16 @@ public class NoteServiceImpl implements NoteService {
         return noteRepository.findByUser(user);
     }
     @Override
-    public PaginationResult<NoteDto> getAllNotesPaginated(User user, Pageable page) {
+    public PaginationResult<NoteDto> getAllNotesPaginated(User user, Pageable page,String search) {
         logger.debug("Getting paginated notes for user: {} with page: {}, size: {}",
                 user.getUsername(), page.getPageNumber(), page.getPageSize());
-        Page<Note> notesPage = noteRepository.findByUser(user, page);
+
+        Page<Note> notesPage;
+        if (search == null || search.trim().isEmpty()) {
+             notesPage = noteRepository.findByUser(user, page);
+        }else{
+            notesPage = noteRepository.findByUserAndTitleContainingIgnoreCaseOrContentContainingIgnoreCase(user, search, search, page);
+        }
 
         List<NoteDto> notes = notesPage.stream()
                 .map(this::transformToDto)

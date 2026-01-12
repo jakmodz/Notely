@@ -88,7 +88,7 @@ import BackButton from '@/components/BackButton.vue';
 import NoteView from '@/components/NoteView.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import notesService from '@/api/services/notesService.js';
-
+import handleApiError from '@/util/apiError.js';
 const route = useRoute();
 const router = useRouter();
 
@@ -118,17 +118,7 @@ const fetchNote = async () => {
         const response = await notesService.getNote(route.params.id);
         note.value = response.data;
     } catch (err) {
-        console.error('Error fetching note:', err);
-        
-        const backendMessage = err.response?.data?.message;
-        
-        if (err.response?.status === 404) {
-            error.value = backendMessage || 'Note not found.';
-        } else if (err.response?.status === 403) {
-            error.value = backendMessage || 'You do not have permission to view this note.';
-        } else {
-            error.value = backendMessage || 'Failed to load note. Please try again.';
-        }
+        error.value = handleApiError(err);
     } finally {
         loading.value = false;
     }
@@ -152,8 +142,7 @@ const confirmDelete = async () => {
         closeDeleteModal(); 
         router.push({ name: 'Home' }); 
     } catch (err) {
-        console.error('Error deleting note:', err);
-        error.value = err.response?.data?.message || 'Failed to delete note';
+        error.value = handleApiError(err);
         closeDeleteModal();
     }
 };

@@ -1,5 +1,6 @@
-package io.github.jakmodz.backend.exceptions;
+package io.github.jakmodz.backend.exceptions.errorHandler;
 
+import io.github.jakmodz.backend.exceptions.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -287,7 +288,18 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(e.getStatusCode()).body(error);
     }
-
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimitExceededException(RateLimitExceededException e, WebRequest request) {
+        logger.warn("Rate limit exceeded: {}", e.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                "Too Many Requests.Try again later.",
+                e.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
+    }
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFound(NoHandlerFoundException e, WebRequest request) {
         logger.warn("No handler found: {}", e.getRequestURL());

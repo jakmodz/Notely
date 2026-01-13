@@ -1,4 +1,4 @@
-package io.github.jakmodz.backend.exceptions;
+package io.github.jakmodz.backend.exceptions.errorHandler;
 
 import java.time.LocalDateTime;
 

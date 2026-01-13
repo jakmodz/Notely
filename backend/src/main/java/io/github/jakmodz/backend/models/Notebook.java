@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ import java.util.UUID;
         @Index(name = "idx_notebook_user", columnList = "user_id"),
         @Index(name = "idx_notebook_parent", columnList = "parent_notebook_id")
 })
-public class Notebook {
+public class Notebook implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

@@ -1,5 +1,6 @@
 package io.github.jakmodz.backend.models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "notes", indexes = {
         @Index(name = "idx_note_uuid", columnList = "uuid")
 })
-public class Note {
+public class Note implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID uuid;

@@ -1,10 +1,11 @@
 package io.github.jakmodz.backend.controllers;
 
 import io.github.jakmodz.backend.dtos.*;
-import io.github.jakmodz.backend.exceptions.ErrorResponse;
+import io.github.jakmodz.backend.exceptions.errorHandler.ErrorResponse;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.RateLimit;
 import io.github.jakmodz.backend.services.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,6 +54,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/register")
+    @RateLimit(limit = 1, timeWindowSeconds = 300)
     public ResponseEntity<Void> registerUser(@Valid @RequestBody UserCredentials user) {
         userService.registerUser(user);
         logger.info("Registered new user: {}", user.getUsername());

@@ -2,7 +2,7 @@ package io.github.jakmodz.backend.configs;
 
 
 import io.github.jakmodz.backend.jwt.AuthEntryPointJwt;
-import io.github.jakmodz.backend.jwt.AuthTokenFilter;
+import io.github.jakmodz.backend.security.filters.AuthTokenFilter;
 import io.github.jakmodz.backend.jwt.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

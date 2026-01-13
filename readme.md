@@ -43,7 +43,7 @@ I treat this project as hello world for learning new technologies.
 - Node.js 18+
 - Docker & Docker Compose
 - PostgreSQL
-- Redis (Planned)
+- Redis 
 ### Backend Setup
 1. Navigate to the backend directory:
     ```bash

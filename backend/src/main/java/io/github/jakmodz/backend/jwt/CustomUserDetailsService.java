@@ -1,7 +1,7 @@
 package io.github.jakmodz.backend.jwt;
 
 import io.github.jakmodz.backend.models.User;
-import io.github.jakmodz.backend.services.impl.UserServiceImpl;
+import io.github.jakmodz.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Autowired
-    public CustomUserDetailsService(UserServiceImpl userService) {
+    public CustomUserDetailsService(UserService userService) {
         this.userService = userService;
     }
 

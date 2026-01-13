@@ -7,6 +7,7 @@ import io.github.jakmodz.backend.jwt.JwtService;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.security.RateLimit;
 import io.github.jakmodz.backend.services.RefreshTokenService;
+import io.github.jakmodz.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
-import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,13 +33,13 @@ import java.security.Principal;
 public class UserController {
     @Value("${jwt.refresh-expiration}")
     private Long refreshTokenDuration;
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-     UserController(UserServiceImpl userService, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
+     UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;

@@ -4,8 +4,8 @@ import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.dtos.PaginationResult;
 import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
-import io.github.jakmodz.backend.services.impl.NoteServiceImpl;
-import io.github.jakmodz.backend.services.impl.UserServiceImpl;
+import io.github.jakmodz.backend.services.NoteService;
+import io.github.jakmodz.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,15 +20,14 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.security.Principal;
-import java.util.List;
 import java.util.UUID;
 @RestController
 @RequestMapping("/notes")
 public class NotesController {
-    private final NoteServiceImpl noteService;
-    private final UserServiceImpl userService;
+    private final NoteService noteService;
+    private final UserService userService;
     @Autowired
-    public NotesController(NoteServiceImpl noteService, AuthenticationManager authenticationManager, UserServiceImpl userService) {
+    public NotesController(NoteService noteService, AuthenticationManager authenticationManager, UserService userService) {
         this.noteService = noteService;
         this.userService = userService;
     }

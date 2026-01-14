@@ -2,6 +2,8 @@
 
 I treat this project as hello world for learning new technologies.
 
+
+
 ## Features
 - Create, edit and delete notes
 - Notes are written in markdown
@@ -46,6 +48,7 @@ I treat this project as hello world for learning new technologies.
 
 ## Docs
 - API Documentation: Accessible at `http://localhost:8080/swagger-ui.html` after starting the backend server.
+
 
 ### Backend Setup
 1. Navigate to the backend directory:

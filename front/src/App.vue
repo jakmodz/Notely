@@ -95,10 +95,7 @@
               </div>
             </div>
             <div class="px-4">
-                <TreeView 
-                    :nodes="config" 
-                    @node-click="onNodeClick"
-                />
+                
             </div>
               
           </aside>
@@ -133,99 +130,7 @@ const handleLogout = async () => {
 const onNodeClick = (node) => {
     console.log('Node clicked:', node);
 };
-const config = ref({
-  roots: ['1', '5', '15', '19'],
-  padding: 20,
-  editable: false,
-  checkboxes: false,
-  dragAndDrop: false,
-  nodes: {
-    '1': {
-      text: 'Applications',
-      children: ['2', '3', '4']
-    },
-    '2': {
-      text: 'Calendar'
-    },
-    '3': {
-      text: 'Chrome'
-    },
-    '4': {
-      text: 'Webstorm'
-    },
-    '5': {
-      text: 'Documents',
-      children: ['6', '10']
-    },
-    '6': {
-      text: 'vuetify',
-      children: ['7']
-    },
-    '7': {
-      text: 'src',
-      children: ['8', '9']
-    },
-    '8': {
-      text: 'index.ts'
-    },
-    '9': {
-      text: 'bootstrap.ts'
-    },
-    '10': {
-      text: 'material2',
-      children: ['11']
-    },
-    '11': {
-      text: 'src',
-      children: ['12', '13', '14']
-    },
-    '12': {
-      text: 'v-btn.ts'
-    },
-    '13': {
-      text: 'v-card.ts'
-    },
-    '14': {
-      text: 'v-window.ts'
-    },
-    '15': {
-      text: 'Downloads',
-      children: ['16', '17', '18']
-    },
-    '16': {
-      text: 'October.pdf'
-    },
-    '17': {
-      text: 'November.pdf'
-    },
-    '18': {
-      text: 'Tutorial.html'
-    },
-    '19': {
-      text: 'Videos',
-      children: ['20', '24', '25']
-    },
-    '20': {
-      text: 'Tutorials',
-      children: ['21', '22', '23']
-    },
-    '21': {
-      text: 'Basic layouts.mp4'
-    },
-    '22': {
-      text: 'Advanced techniques.mp4'
-    },
-    '23': {
-      text: 'All about app'
-    },
-    '24': {
-      text: 'Intro.mov'
-    },
-    '25': {
-      text: 'Conference introduction.avi'
-    }
-  }
-});
+
 </script>
 <style>
 @import "tailwindcss";

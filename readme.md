@@ -9,7 +9,6 @@ I treat this project as hello world for learning new technologies.
 - User authentication
 - Responsive design for mobile and desktop
 - Dark and light themes
-<!--- Search notes by title and content-->
 
 ### Frontend
 - **Framework**: Vue.js 3 (Composition API)
@@ -63,6 +62,8 @@ I treat this project as hello world for learning new technologies.
         REDIS_HOST
         REDIS_PORT
         JWT_SECRET
+        SPRING_PROFILES_ACTIVE
+        
     ```
 3. Build and run the backend:
     ```bash
@@ -73,7 +74,7 @@ I treat this project as hello world for learning new technologies.
 1. Navigate to the frontend directory:
     ```bash
     cd frontend
-    ```
+    ```q
 2. Install dependencies:
     ```bash
     npm install

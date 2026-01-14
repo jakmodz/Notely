@@ -4,6 +4,7 @@ import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.dtos.PaginationResult;
 import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.RateLimit;
 import io.github.jakmodz.backend.services.NoteService;
 import io.github.jakmodz.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,7 @@ public class NotesController {
         }
     )
     @PostMapping("/create")
+    @RateLimit(limit = 1, timeWindowSeconds = 5)
     public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto note, Principal principal) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);
@@ -105,6 +107,7 @@ public class NotesController {
         }
     )
     @PutMapping("/{id}")
+    @RateLimit(limit = 1, timeWindowSeconds = 10)
     public ResponseEntity<Void> updateNote(Principal principal, @PathVariable UUID id, @Valid @RequestBody NoteDto noteDto) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);

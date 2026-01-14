@@ -71,6 +71,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/login")
+    @RateLimit(limit = 1, timeWindowSeconds = 90)
     public ResponseEntity<LoginResponse> loginUser(@RequestBody UserCredentials user, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
@@ -119,6 +120,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/reset")
+    @RateLimit(limit = 1, timeWindowSeconds = 300)
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody NewPassword newPassword, Principal principal) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);

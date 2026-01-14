@@ -112,8 +112,6 @@
         </div>
     </div>
 </template>
-//TODO: pinnned notes
-//TODO: Notebooks as groups of note
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';

@@ -12,6 +12,10 @@ export default function handleApiError(error) {
         return 'You do not have permission to perform this action.';
       case 404:
         return message || 'The requested resource was not found.';
+      case 409:
+        return message || 'Conflict detected. Please resolve the issue and try again.';
+      case 429:
+        return 'Too many requests. Please slow down.';
       case 500:
         return 'Server error. Please try again later.';
       default:

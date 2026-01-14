@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface NoteService {
     Note  createNote(NoteDto note, User user);
-    List<Note> getAllNotes(User user);
     Note getNoteById(UUID noteId, User user);
     Note updateNoteById(UUID noteId, NoteDto noteDto, User user);
     void deleteNoteById(UUID noteId, User user);

@@ -81,12 +81,7 @@ public class NoteServiceImpl implements NoteService {
         logger.debug("Deleted note: {}", note);
     }
 
-    @Override
-    @Cacheable(value = "notes", key = "#user.getId()")
-    public List<Note> getAllNotes(User user) {
-        logger.debug("Getting all notes: {}", user);
-        return noteRepository.findByUser(user);
-    }
+
     @Override
     public PaginationResult<NoteDto> getAllNotesPaginated(User user, Pageable page,String search) {
         logger.debug("Getting paginated notes for user: {} with page: {}, size: {}",

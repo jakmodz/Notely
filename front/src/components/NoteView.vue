@@ -7,7 +7,6 @@
 </template>
 <script setup>
 import VueMarkdown from 'vue-markdown-render'
-
 const props = defineProps({
     content: {
         type: String,

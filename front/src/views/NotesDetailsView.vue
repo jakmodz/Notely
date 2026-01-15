@@ -62,12 +62,6 @@
                             </svg>
                             <span>Created: {{ formatDate(note.created) }}</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            <span>Modified: {{ formatDate(note.modified) }}</span>
-                        </div>
                     </div>
                     
                     <NoteView :content="note.content"/>
@@ -87,7 +81,6 @@
         />
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -95,7 +88,7 @@ import BackButton from '@/components/BackButton.vue';
 import NoteView from '@/components/NoteView.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import notesService from '@/api/services/notesService.js';
-
+import handleApiError from '@/util/apiError.js';
 const route = useRoute();
 const router = useRouter();
 
@@ -125,17 +118,7 @@ const fetchNote = async () => {
         const response = await notesService.getNote(route.params.id);
         note.value = response.data;
     } catch (err) {
-        console.error('Error fetching note:', err);
-        
-        const backendMessage = err.response?.data?.message;
-        
-        if (err.response?.status === 404) {
-            error.value = backendMessage || 'Note not found.';
-        } else if (err.response?.status === 403) {
-            error.value = backendMessage || 'You do not have permission to view this note.';
-        } else {
-            error.value = backendMessage || 'Failed to load note. Please try again.';
-        }
+        error.value = handleApiError(err);
     } finally {
         loading.value = false;
     }
@@ -153,15 +136,15 @@ const closeDeleteModal = () => {
     showDeleteModal.value = false;
 };
 
-const confirmDelete = () => {
-    notesService.deleteNote(note.value.uuid)
-        .then(() => {
-             router.push("/");
-        })
-        .catch(err => {
-            console.error('Error deleting note:', err);
-            error.value = err.response?.data?.message || 'Failed to delete note';
-        });
+const confirmDelete = async () => {
+    try {
+        await notesService.deleteNote(note.value.uuid);
+        closeDeleteModal(); 
+        router.push({ name: 'Home' }); 
+    } catch (err) {
+        error.value = handleApiError(err);
+        closeDeleteModal();
+    }
 };
 
 watch(() => route.params.id, (newId) => {

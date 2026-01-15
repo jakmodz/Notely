@@ -1,11 +1,13 @@
 package io.github.jakmodz.backend.controllers;
 
 import io.github.jakmodz.backend.dtos.*;
-import io.github.jakmodz.backend.exceptions.ErrorResponse;
+import io.github.jakmodz.backend.exceptions.errorHandler.ErrorResponse;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.RateLimit;
 import io.github.jakmodz.backend.services.RefreshTokenService;
+import io.github.jakmodz.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
-import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,13 +33,13 @@ import java.security.Principal;
 public class UserController {
     @Value("${jwt.refresh-expiration}")
     private Long refreshTokenDuration;
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-     UserController(UserServiceImpl userService, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
+     UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -53,6 +54,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/register")
+    @RateLimit(limit = 1, timeWindowSeconds = 300)
     public ResponseEntity<Void> registerUser(@Valid @RequestBody UserCredentials user) {
         userService.registerUser(user);
         logger.info("Registered new user: {}", user.getUsername());
@@ -69,6 +71,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/login")
+    @RateLimit(limit = 1, timeWindowSeconds = 90)
     public ResponseEntity<LoginResponse> loginUser(@RequestBody UserCredentials user, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
@@ -117,6 +120,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/reset")
+    @RateLimit(limit = 1, timeWindowSeconds = 300)
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody NewPassword newPassword, Principal principal) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);

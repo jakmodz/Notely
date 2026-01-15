@@ -60,7 +60,8 @@
 
 <script setup>
 import { computed } from 'vue';
-
+import {formatDate } from '@/util/date.js';
+  
 const props = defineProps({
   note: {
     type: Object,
@@ -81,34 +82,5 @@ const getContentPreview = (content) => {
     .trim();
   
   return plainText.length > 150 ? plainText.substring(0, 150) + '...' : plainText;
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'Unknown';
-  
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now - date);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  if (diffDays === 0) {
-    return 'Today';
-  } else if (diffDays === 1) {
-    return 'Yesterday';
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-  } else {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  }
 };
 </script>

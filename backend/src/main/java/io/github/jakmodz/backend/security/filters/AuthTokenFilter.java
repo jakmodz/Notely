@@ -1,5 +1,6 @@
-package io.github.jakmodz.backend.jwt;
+package io.github.jakmodz.backend.security.filters;
 
+import io.github.jakmodz.backend.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

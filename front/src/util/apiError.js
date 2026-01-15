@@ -6,11 +6,16 @@ export default function handleApiError(error) {
     switch (status) {
       case 400:
         return message || 'Invalid request. Please check your input.';
-      case 401:        return 'Your session has expired. Please login again.';
+      case 401:
+        return message || 'Your session has expired. Please login again.';
       case 403:
         return 'You do not have permission to perform this action.';
       case 404:
         return message || 'The requested resource was not found.';
+      case 409:
+        return message || 'Conflict detected. Please resolve the issue and try again.';
+      case 429:
+        return 'Too many requests. Please slow down.';
       case 500:
         return 'Server error. Please try again later.';
       default:

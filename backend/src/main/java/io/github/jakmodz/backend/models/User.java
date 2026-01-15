@@ -1,6 +1,6 @@
 package io.github.jakmodz.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,7 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,7 +20,7 @@ import java.util.Set;
         @Index(name = "idx_user_id", columnList = "id"),
         @Index(name = "idx_user_username", columnList = "username")
 })
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
@@ -28,9 +30,12 @@ public class User {
     String password;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     Set<Note> notes;
 
+    @OneToMany
+    @JsonIgnore
+    Set<Notebook> notebooks;
 
     @CreationTimestamp
     LocalDateTime created;

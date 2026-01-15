@@ -41,11 +41,10 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(String password,User user) {
         logger.info("Updating user {}", user.getUsername());
 
-        String hashedPassword = encoder.encode(password);
-
-        if(hashedPassword.equals(user.getPassword())) {
-            //TODO throw error same password
+        if(encoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("New password must be different from the old one");
         }
+        String hashedPassword = encoder.encode(password);
         logger.info("password changed for user: {}",user.getUsername());
         user.setPassword(hashedPassword);
         userRepository.save(user);

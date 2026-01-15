@@ -2,6 +2,8 @@
 
 I treat this project as hello world for learning new technologies.
 
+
+
 ## Features
 - Create, edit and delete notes
 - Notes are written in markdown
@@ -9,7 +11,6 @@ I treat this project as hello world for learning new technologies.
 - User authentication
 - Responsive design for mobile and desktop
 - Dark and light themes
-<!--- Search notes by title and content-->
 
 ### Frontend
 - **Framework**: Vue.js 3 (Composition API)
@@ -43,13 +44,18 @@ I treat this project as hello world for learning new technologies.
 - Node.js 18+
 - Docker & Docker Compose
 - PostgreSQL
-- Redis (Planned)
+- Redis 
+
+## Docs
+- API Documentation: Accessible at `http://localhost:8080/swagger-ui.html` after starting the backend server.
+
+
 ### Backend Setup
 1. Navigate to the backend directory:
     ```bash
     cd backend
     ```
-2. Configure  the database and redis connections in `docker-compose.yaml`:
+2. Configure database, redis connections and other env vars in `docker-compose.yaml`:
     ```properties
         DB_HOST
         DB_PORT
@@ -58,6 +64,9 @@ I treat this project as hello world for learning new technologies.
         DB_PASSWORD
         REDIS_HOST
         REDIS_PORT
+        JWT_SECRET
+        SPRING_PROFILES_ACTIVE
+        
     ```
 3. Build and run the backend:
     ```bash
@@ -68,7 +77,7 @@ I treat this project as hello world for learning new technologies.
 1. Navigate to the frontend directory:
     ```bash
     cd frontend
-    ```
+    ```q
 2. Install dependencies:
     ```bash
     npm install

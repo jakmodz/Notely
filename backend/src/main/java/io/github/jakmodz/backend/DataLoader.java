@@ -2,7 +2,6 @@ package io.github.jakmodz.backend;
 
 import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.dtos.UserCredentials;
-import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.repositories.UserRepository;
 import io.github.jakmodz.backend.services.impl.NoteServiceImpl;
@@ -62,7 +61,6 @@ public class DataLoader implements CommandLineRunner {
 
             Enjoy using Markdown for your notes!
             """;
-    // Sample content arrays for generating diverse notes
     private final String[] noteTitles = {
             "Meeting Notes", "Project Ideas", "Shopping List", "Daily Journal",
             "Code Snippets", "Book Notes", "Travel Plans", "Recipe Collection",
@@ -141,7 +139,7 @@ public class DataLoader implements CommandLineRunner {
 
 
 
-    public void run(String... args) throws Exception {
+    public void run( String... args) {
         if(userRepository.findAll().isEmpty()) {
             createManyUsersAndNotes();
         } else {

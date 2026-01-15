@@ -5,6 +5,7 @@ import { createVfm } from 'vue-final-modal'
 import App from './App.vue'
 import 'vue-final-modal/style.css'
 import './assets/main.css'
+import ElementPlus from 'element-plus'
 
 const pinia = createPinia();
 const vfm = createVfm()
@@ -12,5 +13,6 @@ const vfm = createVfm()
 createApp(App)
   .use(pinia)
   .use(vfm)
+  .use(ElementPlus)
   .use(router)
   .mount('#app')

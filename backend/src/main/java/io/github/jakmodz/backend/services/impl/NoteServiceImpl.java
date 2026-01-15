@@ -1,6 +1,7 @@
 package io.github.jakmodz.backend.services.impl;
 
 import io.github.jakmodz.backend.dtos.NoteDto;
+import io.github.jakmodz.backend.dtos.PaginationResult;
 import io.github.jakmodz.backend.exceptions.ForbiddenAccessException;
 import io.github.jakmodz.backend.exceptions.NoteNotFoundException;
 import io.github.jakmodz.backend.models.Note;
@@ -15,6 +16,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +25,6 @@ import java.util.UUID;
 
 
 @Service
-//TODO: Pagination
-//TODO: Search
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final Logger logger= LoggerFactory.getLogger(NoteServiceImpl.class);
@@ -80,10 +81,33 @@ public class NoteServiceImpl implements NoteService {
         logger.debug("Deleted note: {}", note);
     }
 
+
     @Override
-    @Cacheable(value = "notes", key = "#user.getId()")
-    public List<Note> getAllNotes(User user) {
-        logger.debug("Getting all notes: {}", user);
-        return noteRepository.findByUser(user);
+    public PaginationResult<NoteDto> getAllNotesPaginated(User user, Pageable page,String search) {
+        logger.debug("Getting paginated notes for user: {} with page: {}, size: {}",
+                user.getUsername(), page.getPageNumber(), page.getPageSize());
+
+        Page<Note> notesPage;
+        if (search == null || search.trim().isEmpty()) {
+             notesPage = noteRepository.findByUser(user, page);
+        }else{
+            notesPage = noteRepository.findByUserAndTitleContainingIgnoreCaseOrContentContainingIgnoreCase(user, search, search, page);
+        }
+
+        List<NoteDto> notes = notesPage.stream()
+                .map(this::transformToDto)
+                .toList();
+        logger.debug("Retrieved {} notes out of {} total",
+                notes.size(), notesPage.getTotalElements());
+
+        return new PaginationResult<NoteDto>(
+                notes,
+                notesPage.getTotalPages(),
+                notesPage.getTotalElements(),
+                notesPage.getSize(),
+                notesPage.getNumber(),
+                notesPage.isEmpty()
+        );
     }
+
 }

@@ -124,6 +124,9 @@ const notes = ref([]);
 const errorMessage = ref('');
 const isLoading = ref(false);
 
+
+
+
 const fetchNotes = async () => {
     isLoading.value = true;
     errorMessage.value = '';

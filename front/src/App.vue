@@ -83,10 +83,10 @@
           leave-from-class="translate-x-0"
           leave-to-class="-translate-x-full"
         >
-          <aside 
-            v-if="isAuthenticated && sideBar"
-            class="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-40 shadow-xl overflow-y-auto"
-          >
+            <aside 
+              v-if="isAuthenticated && sideBar"
+              class="fixed top-16 left-0 h-[calc(100vh-4rem)] w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-40 shadow-xl overflow-y-auto"
+            >
             <div class="p-4 space-y-2">
               <div class="mb-6">
                 <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-3">
@@ -95,13 +95,29 @@
               </div>
             </div>
             <div class="px-4">
-                
+                <el-tree
+                  :data="treeData"
+                  :props="treeProps"
+                  class="custom-tree"
+                  :default-expand-all="false"
+                >
+
+                <template #default="{ node, data }">
+                    <span class="custom-tree-node flex items-center gap-2">
+                      <!-- Show icon only for root level nodes -->
+                      <svg v-if="node.level === 1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                      </svg>
+                      <span class="node-label">{{ node.label }}</span>
+                    </span>
+                </template>
+                </el-tree>
             </div>
+
               
           </aside>
         </Transition>
     <router-view />
-    
   </div>
   <ModalsContainer />
 </template>
@@ -111,13 +127,93 @@ import { useAuthStore } from "@/stores/auth.js";
 import { useThemeStore } from "@/stores/themes.js";
 import { useRouter } from "vue-router";
 import { ModalsContainer } from 'vue-final-modal';
-import TreeView from "vue3-treeview";
-import "vue3-treeview/dist/style.css";
+
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const router = useRouter();
 const sideBar = ref(false);
 
+const treeData = ref([
+
+  {
+    id: 1,
+    label: 'Work',
+    children: [
+      {
+        id: 2,
+        label: 'Meeting Notes',
+      },
+      {
+        id: 3,
+        label: 'Project Ideas',
+        children: [
+          {
+            id: 4,
+            label: 'Q1 2024',
+            children: [
+              {
+                id: 8,
+                label: 'App Redesign',
+              },
+              {
+                id: 9,
+                label: 'New Marketing Strategy',
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 1,
+    label: 'Work',
+    children: [
+      {
+        id: 2,
+        label: 'Meeting Notes',
+      },
+      {
+        id: 3,
+        label: 'Project Ideas',
+        children: [
+          {
+            id: 4,
+            label: 'Q1 2024',
+            children: [
+              {
+                id: 8,
+                label: 'App Redesign',
+              },
+              {
+                id: 9,
+                label: 'New Marketing Strategy',
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 5,
+    label: 'Personal',
+    children: [
+      {
+        id: 6,
+        label: 'Shopping List',
+      },
+      {
+        id: 7,
+        label: 'Recipes',
+      }
+    ]
+  }
+]);
+const treeProps = {
+  children: 'children',
+  label: 'label',
+};
 const isAuthenticated = computed(() => authStore.isLoggedIn());
 onMounted(async () => {
   themeStore.initTheme();
@@ -165,4 +261,28 @@ const onNodeClick = (node) => {
   border-radius: 0.5rem;
   transition: background-color 0.2s;
 }
+.custom-tree {
+  background: transparent !important;
+}
+.custom-tree .el-tree-node__children {
+  padding-left: 24px !important; /* Adjust this value for more/less indent */
+}
+.custom-tree .el-tree-node > .el-tree-node__children > .el-tree-node > .el-tree-node__content {
+  padding-left: 32px !important;
+}
+.custom-tree .el-tree-node__expand-icon {
+  font-size: 12px !important;
+  width: 16px !important;
+  height: 16px !important;
+  transform: scale(0.7) !important;
+  color: rgb(100 116 139) !important;
+  margin-right: 4px !important;
+}
+.custom-tree .el-tree-node__expand-icon {
+  display: none !important;
+}
+.custom-tree .el-tree-node__expand-icon.is-leaf {
+  display: none !important;
+}
+
 </style>

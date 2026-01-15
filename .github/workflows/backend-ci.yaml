@@ -1,0 +1,53 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yaml'  
+jobs:
+  test:
+    name: Test and code Quality
+    runs-on: ubuntu-latest
+    services:
+         postgres:
+           image: postgres:18
+           env:
+             POSTGRES_DB: notely_test
+             POSTGRES_USER: postgres
+             POSTGRES_PASSWORD: postgres
+           options: >-
+             --health-cmd pg_isready
+             --health-interval 10s
+             --health-timeout 5s
+             --health-retries 5
+           ports:
+             - 5432:5432
+         redis:
+           image: redis:7-alpine
+           options: >-
+             --health-cmd "redis-cli ping"
+             --health-interval 10s
+             --health-timeout 5s
+             --health-retries 5
+           ports:
+             - 6379:6379
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run tests
+      working-directory: ./backend
+      run: ./mvnw clean test
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/notely_test
+        SPRING_DATASOURCE_USERNAME: postgres
+        SPRING_DATASOURCE_PASSWORD: postgres
+        SPRING_REDIS_HOST: localhost
+        SPRING_REDIS_PORT: 6379
+    - name: Verify build
+      working-directory: ./backend
+      run: ./mvnw verify -DskipTests

@@ -77,7 +77,7 @@ I treat this project as hello world for learning new technologies.
 1. Navigate to the frontend directory:
     ```bash
     cd frontend
-    ```q
+    ```
 2. Install dependencies:
     ```bash
     npm install

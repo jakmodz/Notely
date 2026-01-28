@@ -2,7 +2,9 @@ package io.github.jakmodz.backend;
 
 import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.dtos.UserCredentials;
+import io.github.jakmodz.backend.models.Notebook;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.repositories.NotebookRepository;
 import io.github.jakmodz.backend.repositories.UserRepository;
 import io.github.jakmodz.backend.services.impl.NoteServiceImpl;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
@@ -16,15 +18,16 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Component
 @Transactional
 public class DataLoader implements CommandLineRunner {
-
     private final Logger logger = LoggerFactory.getLogger(DataLoader.class);
     private final UserServiceImpl userService;
     private final NoteServiceImpl noteService;
     private final UserRepository userRepository;
+    private final NotebookRepository notebookRepository;
     private final Random random = new Random();
 
     private static final String MARKDOWN = """
@@ -81,12 +84,16 @@ public class DataLoader implements CommandLineRunner {
             "### Important Links\n- [Google](https://google.com)\n- [GitHub](https://github.com)",
             "**Priority:** High\n\nNeed to follow up on this ASAP."
     };
-
+    private final String[] notebookNames = {
+            "Work Projects", "Personal", "Learning", "Finance", "Health & Fitness",
+            "Travel", "Recipes", "Code Snippets", "Research", "Ideas"
+    };
     @Autowired
-    public DataLoader(UserServiceImpl userService, NoteServiceImpl noteService, UserRepository userRepository) {
+    public DataLoader(UserServiceImpl userService, NoteServiceImpl noteService, UserRepository userRepository, NotebookRepository notebookRepository) {
         this.userService = userService;
         this.noteService = noteService;
         this.userRepository = userRepository;
+        this.notebookRepository = notebookRepository;
     }
 
     private NoteDto createSampleNote(String title, String content) {
@@ -117,8 +124,20 @@ public class DataLoader implements CommandLineRunner {
             }
         }
         logger.info("✓ Created {} users", users.size());
-
+        logger.info("========================================");
+        int totalNotebooks = 0;
+        for (User user : users) {
+            try {
+                createNotebooksForUser(user);
+                totalNotebooks += notebookRepository.countByUser(user);
+            } catch (Exception e) {
+                logger.error("Error creating notebooks for user {}: {}", user.getUsername(), e.getMessage());
+            }
+        }
+        logger.info("✓ Created {} total notebooks", totalNotebooks);
         logger.info("Creating {} notes per user...", notesPerUser);
+
+
         int totalNotes = 0;
         for (User user : users) {
             for (int i = 0; i < notesPerUser; i++) {
@@ -126,7 +145,7 @@ public class DataLoader implements CommandLineRunner {
                     String title = noteTitles[random.nextInt(noteTitles.length)] + " #" + (i + 1);
                     String content = noteContents[random.nextInt(noteContents.length)];
                     NoteDto noteDto = createSampleNote(title, content);
-                    noteService.createNote(noteDto, user);
+                    noteService.createNote(noteDto, user,null);
                     totalNotes++;
                 } catch (Exception e) {
                     logger.error("Error creating note for user {}: {}", user.getUsername(), e.getMessage());
@@ -134,10 +153,29 @@ public class DataLoader implements CommandLineRunner {
             }
         }
         logger.info("✓ Created {} total notes", totalNotes);
-        logger.info("========================================");
     }
 
+    private UUID createNotebooksForUser(User user) {
+        List<Notebook> parentNotebooks = new ArrayList<>();
 
+        for (int i = 0; i < 3; i++) {
+            Notebook notebook = new Notebook();
+            notebook.setName(notebookNames[random.nextInt(notebookNames.length)] + " #" + (i + 1));
+            notebook.setUser(user);
+            parentNotebooks.add(notebookRepository.save(notebook));
+        }
+
+        for (Notebook parent : parentNotebooks) {
+            if (random.nextBoolean()) {
+                Notebook child = new Notebook();
+                child.setName("Sub-" + parent.getName());
+                child.setUser(user);
+                child.setParentNotebook(parent);
+                notebookRepository.save(child);
+            }
+        }
+        return null;
+    }
 
     public void run( String... args) {
         if(userRepository.findAll().isEmpty()) {

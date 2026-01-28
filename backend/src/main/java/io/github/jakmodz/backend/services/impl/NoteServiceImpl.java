@@ -8,6 +8,7 @@ import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.repositories.NoteRepository;
 import io.github.jakmodz.backend.services.NoteService;
+import io.github.jakmodz.backend.services.NotebookService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,19 +28,24 @@ import java.util.UUID;
 @Service
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
+    private final NotebookService notebookService;
     private final Logger logger= LoggerFactory.getLogger(NoteServiceImpl.class);
     @Autowired
-    public NoteServiceImpl(NoteRepository noteRepository) {
+    public NoteServiceImpl(NoteRepository noteRepository, NotebookServiceImpl notebookService) {
         this.noteRepository = noteRepository;
+        this.notebookService = notebookService;
     }
 
     @Transactional
     @Override
     @CacheEvict(value = "notes", allEntries = true)
-    public Note createNote(NoteDto note, User user) {
+    public Note createNote(NoteDto note, User user,UUID notebookId) {
         logger.debug("Creating note: {}", note);
         Note newNote = transformToEntity(note);
         newNote.setUser(user);
+        if (notebookId != null) {
+            newNote.setNotebook(notebookService.getByIdAndUser(notebookId, user));
+        }
         noteRepository.save(newNote);
         return newNote;
     }
@@ -110,4 +116,11 @@ public class NoteServiceImpl implements NoteService {
         );
     }
 
+    @Override
+    public List<Note> getNoteByNotebookParentId(UUID notebookId, User user) {
+        logger.debug("Getting notes for notebook id: {} and user: {}", notebookId, user.getUsername());
+        List<Note> notes = noteRepository.findByNotebook(notebookId, user);
+        logger.debug("Retrieved {} notes for notebook id: {}", notes.size(), notebookId);
+        return notes;
+    }
 }

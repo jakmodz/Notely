@@ -41,10 +41,10 @@ public class NotesController {
     )
     @PostMapping("/create")
     @RateLimit(limit = 1, timeWindowSeconds = 5)
-    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto note, Principal principal) {
+    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto note, Principal principal, @RequestParam(required = false) UUID notebookId) {
         String username = principal.getName();
         User user = userService.getUserByUsername(username);
-        NoteDto noteDto =noteService.transformToDto(noteService.createNote(note,user));
+        NoteDto noteDto =noteService.transformToDto(noteService.createNote(note,user,notebookId));
         return ResponseEntity.ok(noteDto);
     }
     @Operation(summary = "Getting paginated notes",

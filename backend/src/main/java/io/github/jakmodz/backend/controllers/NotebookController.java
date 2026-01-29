@@ -4,7 +4,6 @@ import io.github.jakmodz.backend.dtos.NotebookDto;
 import io.github.jakmodz.backend.dtos.NotebookTreeDto;
 import io.github.jakmodz.backend.models.Notebook;
 import io.github.jakmodz.backend.models.User;
-import io.github.jakmodz.backend.repositories.NotebookRepository;
 import io.github.jakmodz.backend.services.NotebookService;
 import io.github.jakmodz.backend.services.UserService;
 import io.github.jakmodz.backend.services.impl.NotebookServiceImpl;
@@ -45,7 +44,6 @@ public class NotebookController {
     }
     //TODO: improve code quality
     //TODO: delete notebook button
-    //TODO: reloading notebook tree after changes
 
     @Operation(summary = "Creating new notebook",
             description = "Creating new notebook for user that sends request")

@@ -196,6 +196,7 @@ const handleLogout = async () => {
 
 const handleNodeClick = (data, node, element) => {
   if (data.type == 'note') {
+    sideBar.value = false;
     router.push(`/notes/${data.id}`);
   }
 };
@@ -222,7 +223,7 @@ const onAddClick = (data) => {
         if (itemData.type === "note") {
           sideBar.value = false;
         } 
-         notebooksStore.reloadTree();
+        notebooksStore.reloadTree();
         close();
       }
     }

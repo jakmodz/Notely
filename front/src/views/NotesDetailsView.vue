@@ -89,6 +89,7 @@ import NoteView from '@/components/NoteView.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import notesService from '@/api/services/notesService.js';
 import handleApiError from '@/util/apiError.js';
+import { useNotebooksStore } from "@/stores/notebooks.js";
 const route = useRoute();
 const router = useRouter();
 
@@ -96,7 +97,7 @@ const note = ref(null);
 const loading = ref(true);
 const error = ref(null);
 const showDeleteModal = ref(false);
-
+const notebooksStore = useNotebooksStore();
 const formatDate = (dateString) => {
     if (!dateString) return 'No date';
     const date = new Date(dateString);
@@ -140,6 +141,9 @@ const confirmDelete = async () => {
     try {
         await notesService.deleteNote(note.value.uuid);
         closeDeleteModal(); 
+        
+        notebooksStore.reloadTree();
+        
         router.push({ name: 'Home' }); 
     } catch (err) {
         error.value = handleApiError(err);

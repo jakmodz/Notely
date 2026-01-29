@@ -114,9 +114,12 @@ import { useRouter, useRoute } from 'vue-router';
 import NoteView from '@/components/NoteView.vue';
 import BackButton from '@/components/BackButton.vue';
 import notesService from '@/api/services/notesService.js';
+import { useNotebooksStore } from "@/stores/notebooks.js";
 import handleApiError from '@/util/apiError.js';
 const router = useRouter();
 const route = useRoute();
+
+const notebooksStore = useNotebooksStore();
 
 const noteData = ref({
   title: '',
@@ -147,6 +150,7 @@ const handleCreateNote = async () => {
       title: noteData.value.title.trim(),
       content: noteData.value.content.trim()
     }, route.query.notebookId || null);
+    await notebooksStore.reloadTree();
     router.push({ name: 'NoteDetails', params: { id: response.data.uuid } });
   } catch (error) {
     errorMessage.value = handleApiError(error);

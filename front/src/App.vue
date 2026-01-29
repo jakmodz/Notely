@@ -106,13 +106,13 @@
                 
                 <div class="px-4">
                     <el-tree
-                      ref="treeRef"
-                      :data="treeData"
-                      :props="treeProps"
-                      class="custom-tree"
-                      :default-expand-all="false"
-                      node-key="id"
-                      @node-click="handleNodeClick"
+                        ref="treeRef"
+                        :data="notebooksStore.treeData"
+                        :props="treeProps"
+                        class="custom-tree"
+                        :default-expand-all="false"
+                        node-key="id"
+                        @node-click="handleNodeClick"
                     >
                     <template #default="{ node, data }">
                         <span 
@@ -162,8 +162,11 @@ import { ModalsContainer, useModal } from 'vue-final-modal';
 import CreateItemModal from '@/components/CreateItemModal.vue';
 import notebooksService from '@/api/services/notebookService.js';
 import errorHandler from '@/util/apiError.js';
+import { useNotebooksStore } from "@/stores/notebooks.js";
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
+const notebooksStore = useNotebooksStore();
+
 const router = useRouter();
 const sideBar = ref(false);
 const treeRef = ref(null);
@@ -177,18 +180,10 @@ const isAuthenticated = computed(() => authStore.isLoggedIn());
 onMounted(async () => {
   themeStore.initTheme();
   if (isAuthenticated.value) {
-    await loadNotebooksAndNotes();
+    await notebooksStore.loadNotebooksAndNotes();
   }
 });
 
-const loadNotebooksAndNotes = async () => {
-  try {
-    const response = await notebooksService.getAllNotebooksWithNotes();
-    treeData.value = response.data;
-  } catch (error) {
-    errorHandler.handleError(error);
-  }
-};
 
 const isNotebook = (element) => { 
   return element.type === 'notebook';
@@ -227,7 +222,7 @@ const onAddClick = (data) => {
         if (itemData.type === "note") {
           sideBar.value = false;
         } 
-        loadNotebooksAndNotes();
+         notebooksStore.reloadTree();
         close();
       }
     }

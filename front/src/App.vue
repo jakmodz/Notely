@@ -89,47 +89,64 @@
             >
             <div class="p-4 space-y-2">
               <div class="mb-6">
-                <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-3">
-                  Notebooks:
-                </h2>
-              </div>
-            </div>
-            <div class="px-4">
-                <el-tree
-                  ref="treeRef"
-                  :data="treeData"
-                  :props="treeProps"
-                  class="custom-tree"
-                  :default-expand-all="false"
-                  node-key="id"
-                  @node-click="handleNodeClick"
-                >
-                <template #default="{ node, data }">
-                    <span 
-                      class="custom-tree-node flex items-center gap-2"
-                      @dblclick="handleNodeDoubleClick(node, data)"
+                 <div class="flex items-center justify-between px-3 mb-4">
+                  <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Notebooks
+                  </h2>
+                  <button 
+                    @click.stop="onAddClick(data)" 
+                    class="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200 group"
+                    title="Add new notebook"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                 </div>
+                
+                <div class="px-4">
+                    <el-tree
+                      ref="treeRef"
+                      :data="treeData"
+                      :props="treeProps"
+                      class="custom-tree"
+                      :default-expand-all="false"
+                      node-key="id"
+                      @node-click="handleNodeClick"
                     >
-                        <svg v-if="isNotebook(data)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                        </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        <span class="node-label">{{ node.label }}
-                        </span>
-                    </span>
-                    <div v-if="isNotebook(data)">
-                        <el-button @click.stop="onAddClick(data)" class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <template #default="{ node, data }">
+                        <span 
+                          class="custom-tree-node flex items-center gap-2"
+                          @dblclick="handleNodeDoubleClick(node, data)"
+                        >
+                            <svg v-if="isNotebook(data)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
-                        </el-button>
-                    </div>
-                </template>
-                </el-tree>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span class="node-label">{{ node.label }}
+                            </span>
+                        </span>
+                        <div v-if="isNotebook(data)">
+                            <button 
+                              @click.stop="onAddClick(data)" 
+                              class="p-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200 group opacity-0 group-hover:opacity-100"
+                              title="Add note to notebook"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </template>
+                    </el-tree>
+                </div>
+              </div>
+             
             </div>
-
-              
+            
+            
           </aside>
         </Transition>
     <router-view />
@@ -250,6 +267,11 @@ const onAddClick = (data) => {
 
 .dark .custom-tree .el-tree-node__content:hover {
   background-color: rgb(51 65 85) !important;
+}
+
+/* Show add button on hover */
+.custom-tree .el-tree-node__content:hover button {
+  opacity: 1 !important;
 }
 
 .custom-tree .el-tree-node__expand-icon {

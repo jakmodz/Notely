@@ -2,12 +2,18 @@ package io.github.jakmodz.backend.services.impl;
 
 import io.github.jakmodz.backend.dtos.NotebookDto;
 import io.github.jakmodz.backend.dtos.NotebookTreeDto;
+import io.github.jakmodz.backend.exceptions.ForbiddenAccessException;
 import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.Notebook;
 import io.github.jakmodz.backend.models.User;
 import io.github.jakmodz.backend.repositories.NoteRepository;
 import io.github.jakmodz.backend.repositories.NotebookRepository;
+import io.github.jakmodz.backend.repositories.UserRepository;
+import io.github.jakmodz.backend.services.NoteService;
 import io.github.jakmodz.backend.services.NotebookService;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +25,12 @@ import java.util.stream.Collectors;
 @Service
 public class NotebookServiceImpl implements NotebookService {
     private final NotebookRepository notebookRepository;
-
     private final NoteRepository noteRepository;
 
+    private final Logger logger = LoggerFactory.getLogger(NotebookServiceImpl.class);
+    //TODO: refactor circualar dependency between NoteService and NotebookService
     @Autowired
-    public NotebookServiceImpl(NotebookRepository notebookRepository, NoteRepository noteRepository) {
+    public NotebookServiceImpl(NotebookRepository notebookRepository,NoteRepository noteRepository) {
         this.notebookRepository = notebookRepository;
         this.noteRepository = noteRepository;
     }
@@ -42,6 +49,7 @@ public class NotebookServiceImpl implements NotebookService {
             notebook.setParentNotebook(parentNotebook);
         }
         notebook.setUser(user);
+        logger.debug("Creating notebook: {}", notebookDto.getName());
         return notebookRepository.save(notebook);
     }
 
@@ -101,5 +109,26 @@ public class NotebookServiceImpl implements NotebookService {
 
         dto.setChildren(children.isEmpty() ? null : children);
         return dto;
+    }
+    @Override
+    @Transactional
+    public void deleteNotebook(UUID notebookId, User user) {
+        Notebook notebook = notebookRepository.findByIdAndUser(notebookId, user)
+                .orElseThrow(() -> new ForbiddenAccessException("Notebook not found or access denied"));
+
+        logger.debug("Deleting notebook: {} for user: {}", notebookId, user.getUsername());
+
+        List<Notebook> childNotebooks = notebookRepository.findByUserAndParentNotebook(user, notebook);
+        for (Notebook child : childNotebooks) {
+            deleteNotebook(child.getId(), user);
+        }
+
+        List<Note> notes = noteRepository.findByNotebookAndUser(notebook, user);
+        if (!notes.isEmpty()) {
+            noteRepository.deleteAll(notes);
+            logger.debug("Deleted {} notes for notebook: {}", notes.size(), notebookId);
+        }
+
+        notebookRepository.delete(notebook);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/notebooks")
@@ -43,8 +44,6 @@ public class NotebookController {
         return ResponseEntity.ok(notebookService.getNotebookTreeWithNotes(user));
     }
     //TODO: improve code quality
-    //TODO: delete notebook button
-
     @Operation(summary = "Creating new notebook",
             description = "Creating new notebook for user that sends request")
     @ApiResponses(value = {
@@ -67,5 +66,18 @@ public class NotebookController {
 
         return ResponseEntity.ok(dto);
     }
-
+    @Operation(summary = "Deleting notebook",
+            description = "Deleting notebook for user that sends request")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Successfully deleted notebook"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to delete this notebook"),
+            @ApiResponse(responseCode = "404", description = "Not Found - Notebook not found")
+    })
+    @DeleteMapping("/{notebookId}")
+    public ResponseEntity<Void> deleteNotebook(Principal principal, @PathVariable("notebookId") UUID notebookId) {
+        User user = userService.getUserByUsername(principal.getName());
+        notebookService.deleteNotebook(notebookId, user);
+        return ResponseEntity.noContent().build();
+    }
 }

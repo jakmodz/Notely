@@ -15,4 +15,5 @@ public interface NotebookService {
     List<Notebook> getChildrenNotebooks(User user, Notebook notebook);
     Notebook getByIdAndUser(UUID notebookId, User user);
     List<NotebookTreeDto> getNotebookTreeWithNotes(User user);
+    void deleteNotebook(UUID notebookId,User user);
 }

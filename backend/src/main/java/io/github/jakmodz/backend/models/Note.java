@@ -35,7 +35,7 @@ public class Note implements Serializable {
     @JsonIgnore
     User user;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     Notebook notebook;
 

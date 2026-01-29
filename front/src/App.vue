@@ -51,7 +51,7 @@
                 </router-link>
               <router-link 
                 to="/settings" 
-                class="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all duration-200"
+                class="px-4 py-2 text-sm font-semibold text-slate-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all duration-200"
               >
                 Settings
               </router-link>
@@ -69,7 +69,7 @@
           leave-to-class="opacity-0"
         >
           <div 
-            v-if="isAuthenticated && isSidebarOpen"
+            v-if="isAuthenticated && sideBar"
             @click="closeSidebar"
             class="fixed inset-0 bg-black/50 z-40 lg:hidden"
           />
@@ -94,7 +94,7 @@
                     Notebooks
                   </h2>
                   <button 
-                    @click.stop="onAddClick(data)" 
+                    @click.stop="onAddClick(null)" 
                     class="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200 group"
                     title="Add new notebook"
                   >
@@ -128,14 +128,23 @@
                             <span class="node-label">{{ node.label }}
                             </span>
                         </span>
-                        <div v-if="isNotebook(data)">
-                            <button 
+                        <div >
+                            <button v-if="isNotebook(data)" 
                               @click.stop="onAddClick(data)" 
                               class="p-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200 group opacity-0 group-hover:opacity-100"
                               title="Add note to notebook"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                            <button 
+                              @click.stop="onDeleteClick(data)" 
+                              class="p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 group opacity-0 group-hover:opacity-100"
+                              title="Delete notebook"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
                         </div>
@@ -150,6 +159,18 @@
           </aside>
         </Transition>
     <router-view />
+    
+    <!-- Delete Confirmation Modal -->
+    <ConfirmModal
+      :isOpen="showDeleteModal"
+      :title="`Delete ${itemToDelete?.type === 'notebook' ? 'Notebook' : 'Note'}`"
+      :message="`Are you sure you want to delete '${itemToDelete?.label || 'this item'}'? This action cannot be undone.`"
+      confirmText="Delete"
+      cancelText="Cancel"
+      variant="danger"
+      @confirm="confirmDelete"
+      @cancel="closeDeleteModal"
+    />
   </div>
   <ModalsContainer />
 </template>
@@ -160,9 +181,12 @@ import { useThemeStore } from "@/stores/themes.js";
 import { useRouter } from "vue-router";
 import { ModalsContainer, useModal } from 'vue-final-modal';
 import CreateItemModal from '@/components/CreateItemModal.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import notesService from '@/api/services/notesService.js';
 import notebooksService from '@/api/services/notebookService.js';
 import errorHandler from '@/util/apiError.js';
 import { useNotebooksStore } from "@/stores/notebooks.js";
+
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const notebooksStore = useNotebooksStore();
@@ -170,13 +194,16 @@ const notebooksStore = useNotebooksStore();
 const router = useRouter();
 const sideBar = ref(false);
 const treeRef = ref(null);
-const treeData = ref([]);
+const showDeleteModal = ref(false);
+const itemToDelete = ref(null);
 
 const treeProps = {
   children: 'children',
   label: 'label',
 };
+
 const isAuthenticated = computed(() => authStore.isLoggedIn());
+
 onMounted(async () => {
   themeStore.initTheme();
   if (isAuthenticated.value) {
@@ -184,14 +211,12 @@ onMounted(async () => {
   }
 });
 
-
 const isNotebook = (element) => { 
   return element.type === 'notebook';
 }
 
-const handleLogout = async () => {
-  await authStore.logout();
-  router.push('/login');
+const closeSidebar = () => {
+  sideBar.value = false;
 };
 
 const handleNodeClick = (data, node, element) => {
@@ -219,17 +244,44 @@ const onAddClick = (data) => {
       onClose() {
         close();
       },
-      onSuccess(itemData) {
+      async onSuccess(itemData) {
         if (itemData.type === "note") {
           sideBar.value = false;
         } 
-        notebooksStore.reloadTree();
+        await notebooksStore.reloadTree();
         close();
       }
     }
   });
-  
   open();
+};
+
+const onDeleteClick = (data) => {
+  itemToDelete.value = data;
+  showDeleteModal.value = true;
+};
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+  itemToDelete.value = null;
+};
+
+const confirmDelete = async () => {
+  if (!itemToDelete.value) return;
+  
+  try {
+    if (itemToDelete.value.type === 'notebook') {
+      await notebooksService.deleteNotebook(itemToDelete.value.id);
+    } else if (itemToDelete.value.type === 'note') {
+      await notesService.deleteNote(itemToDelete.value.id);
+    }
+    await notebooksStore.reloadTree();
+    closeDeleteModal();
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    errorHandler.handleError(error);
+    closeDeleteModal();
+  }
 };
 </script>
 <style>

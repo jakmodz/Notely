@@ -133,6 +133,7 @@ public class UserController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite","Strict");
         cookie.setMaxAge(Math.toIntExact(refreshTokenDuration));
         response.addCookie(cookie);
     }
@@ -142,6 +143,7 @@ public class UserController {
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite","Strict");
         response.addCookie(cookie);
     }
 }

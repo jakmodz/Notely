@@ -197,7 +197,7 @@ const treeRef = ref(null);
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
 
-const treeProps = {
+const treeProps= {
   children: 'children',
   label: 'label',
 };

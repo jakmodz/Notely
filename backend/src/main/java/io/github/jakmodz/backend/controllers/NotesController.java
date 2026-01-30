@@ -4,6 +4,7 @@ import io.github.jakmodz.backend.dtos.NoteDto;
 import io.github.jakmodz.backend.dtos.PaginationResult;
 import io.github.jakmodz.backend.models.Note;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.CustomUserDetails;
 import io.github.jakmodz.backend.security.RateLimit;
 import io.github.jakmodz.backend.services.NoteService;
 import io.github.jakmodz.backend.services.UserService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -41,9 +43,8 @@ public class NotesController {
     )
     @PostMapping("/create")
     @RateLimit(limit = 1, timeWindowSeconds = 5)
-    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody NoteDto note, Principal principal, @RequestParam(required = false) UUID notebookId) {
-        String username = principal.getName();
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<NoteDto> createNote(@AuthenticationPrincipal CustomUserDetails customUser,@Valid @RequestBody NoteDto note,  @RequestParam(required = false) UUID notebookId) {
+        User user = customUser.getUserEntity();
         NoteDto noteDto =noteService.transformToDto(noteService.createNote(note,user,notebookId));
         return ResponseEntity.ok(noteDto);
     }
@@ -57,15 +58,15 @@ public class NotesController {
     )
     @GetMapping
     public ResponseEntity<PaginationResult<NoteDto>> getAllNotesPaginated(
-            Principal principal,
+            @AuthenticationPrincipal CustomUserDetails customUser,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "created") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDirection,
             @RequestParam(defaultValue = "") String searchValue
     ) {
-        String username = principal.getName();
-        User user = userService.getUserByUsername(username);
+
+        User user = customUser.getUserEntity();
 
         Sort.Direction direction = sortDirection.equalsIgnoreCase("ASC")
                 ? Sort.Direction.ASC
@@ -78,9 +79,8 @@ public class NotesController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<NoteDto> getNote(Principal principal, @PathVariable UUID id) {
-        String username = principal.getName();
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<NoteDto> getNote(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable UUID id) {
+        User user = customUser.getUserEntity();
         Note note = noteService.getNoteById(id, user);
         NoteDto noteDto = noteService.transformToDto(note);
         return ResponseEntity.ok(noteDto);
@@ -93,9 +93,8 @@ public class NotesController {
         }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNote(Principal principal, @PathVariable UUID id) {
-        String username = principal.getName();
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<Void> deleteNote(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable UUID id) {
+        User user = customUser.getUserEntity();
         noteService.deleteNoteById(id, user);
         return ResponseEntity.ok().build();
     }
@@ -108,9 +107,8 @@ public class NotesController {
     )
     @PutMapping("/{id}")
     @RateLimit(limit = 1, timeWindowSeconds = 10)
-    public ResponseEntity<Void> updateNote(Principal principal, @PathVariable UUID id, @Valid @RequestBody NoteDto noteDto) {
-        String username = principal.getName();
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<Void> updateNote(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable UUID id, @Valid @RequestBody NoteDto noteDto) {
+        User user = customUser.getUserEntity();
         noteService.updateNoteById(id, noteDto, user);
         return ResponseEntity.ok().build();
     }

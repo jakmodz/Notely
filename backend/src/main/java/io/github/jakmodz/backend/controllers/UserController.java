@@ -5,6 +5,7 @@ import io.github.jakmodz.backend.exceptions.errorHandler.ErrorResponse;
 import io.github.jakmodz.backend.exceptions.ExpiredRefreshToken;
 import io.github.jakmodz.backend.jwt.JwtService;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.CustomUserDetails;
 import io.github.jakmodz.backend.security.RateLimit;
 import io.github.jakmodz.backend.services.RefreshTokenService;
 import io.github.jakmodz.backend.services.UserService;
@@ -23,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -121,9 +123,8 @@ public class UserController {
     })
     @PostMapping("/reset")
     @RateLimit(limit = 1, timeWindowSeconds = 300)
-    public ResponseEntity<Void> resetPassword(@Valid @RequestBody NewPassword newPassword, Principal principal) {
-        String username = principal.getName();
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody NewPassword newPassword, @AuthenticationPrincipal CustomUserDetails customUser) {
+        User user = customUser.getUserEntity();
         userService.updatePassword(newPassword.getPassword(),user);
         return ResponseEntity.ok().build();
     }

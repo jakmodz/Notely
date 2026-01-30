@@ -2,17 +2,22 @@ package io.github.jakmodz.backend.controllers;
 
 import io.github.jakmodz.backend.dtos.NotebookDto;
 import io.github.jakmodz.backend.dtos.NotebookTreeDto;
+import io.github.jakmodz.backend.exceptions.errorHandler.ErrorResponse;
 import io.github.jakmodz.backend.models.Notebook;
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.CustomUserDetails;
 import io.github.jakmodz.backend.services.NotebookService;
 import io.github.jakmodz.backend.services.UserService;
 import io.github.jakmodz.backend.services.impl.NotebookServiceImpl;
 import io.github.jakmodz.backend.services.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -35,25 +40,28 @@ public class NotebookController {
             description = "Getting all notebooks with notes for user that sends request as tree structure")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved notebooks tree"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to access these notebooks")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to access these notebooks",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
-    public ResponseEntity<List<NotebookTreeDto>> getAllNotebooks(Principal principal) {
-        User user = userService.getUserByUsername(principal.getName());
+    public ResponseEntity<List<NotebookTreeDto>> getAllNotebooks(@AuthenticationPrincipal CustomUserDetails customUser) {
+        User user = customUser.getUserEntity();
         return ResponseEntity.ok(notebookService.getNotebookTreeWithNotes(user));
     }
-    //TODO: improve code quality
     @Operation(summary = "Creating new notebook",
             description = "Creating new notebook for user that sends request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully created notebook"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to create a notebook"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to create a notebook",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PostMapping("/create")
-    public ResponseEntity<NotebookTreeDto> createNotebook(Principal principal, @RequestBody NotebookDto notebookDto) {
-        User user = userService.getUserByUsername(principal.getName());
+    public ResponseEntity<NotebookTreeDto> createNotebook(@AuthenticationPrincipal CustomUserDetails customUser, @RequestBody NotebookDto notebookDto) {
+        User user = customUser.getUserEntity();
         Notebook savedNotebook = notebookService.createNotebook(notebookDto, user);
 
         NotebookTreeDto dto = new NotebookTreeDto();
@@ -70,14 +78,16 @@ public class NotebookController {
             description = "Deleting notebook for user that sends request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Successfully deleted notebook"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to delete this notebook"),
-            @ApiResponse(responseCode = "404", description = "Not Found - Notebook not found")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication credentials",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden - You do not have permission to delete this notebook",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found - Notebook not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{notebookId}")
-    public ResponseEntity<Void> deleteNotebook(Principal principal, @PathVariable("notebookId") UUID notebookId) {
-        User user = userService.getUserByUsername(principal.getName());
-        notebookService.deleteNotebook(notebookId, user);
+    public ResponseEntity<Void> deleteNotebook(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable("notebookId") UUID notebookId) {
+        User user = customUser.getUserEntity();
         return ResponseEntity.noContent().build();
     }
 }

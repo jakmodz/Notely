@@ -88,6 +88,7 @@ public class NotebookController {
     @DeleteMapping("/{notebookId}")
     public ResponseEntity<Void> deleteNotebook(@AuthenticationPrincipal CustomUserDetails customUser, @PathVariable("notebookId") UUID notebookId) {
         User user = customUser.getUserEntity();
+        notebookService.deleteNotebook(notebookId, user);
         return ResponseEntity.noContent().build();
     }
 }

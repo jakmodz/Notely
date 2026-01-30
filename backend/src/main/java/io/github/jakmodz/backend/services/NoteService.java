@@ -11,11 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface NoteService {
-    Note  createNote(NoteDto note, User user);
+    Note  createNote(NoteDto note, User user,UUID notebookId);
     Note getNoteById(UUID noteId, User user);
     Note updateNoteById(UUID noteId, NoteDto noteDto, User user);
     void deleteNoteById(UUID noteId, User user);
     PaginationResult<NoteDto> getAllNotesPaginated(User user,Pageable page,String search);
+    List<Note> getNoteByNotebookParentId(UUID notebookId, User user);
     default Note transformToEntity(NoteDto noteDto){
         Note  note = new Note();
         note.setTitle(noteDto.getTitle());

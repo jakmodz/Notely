@@ -33,7 +33,7 @@ public class User implements Serializable {
     @JsonIgnore
     Set<Note> notes;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     Set<Notebook> notebooks;
 

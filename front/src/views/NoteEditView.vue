@@ -116,9 +116,12 @@ import { useRoute, useRouter } from 'vue-router';
 import NoteView from '@/components/NoteView.vue';
 import BackButton from '@/components/BackButton.vue';
 import notesService from '@/api/services/notesService.js';
+import { useNotebooksStore } from "@/stores/notebooks.js";
 
 const route = useRoute();
 const router = useRouter();
+
+const notebooksStore = useNotebooksStore();
 
 const note = ref(null);
 const loading = ref(true);
@@ -168,6 +171,8 @@ const saveNote = async () => {
       title: localTitle.value,
       content: localContent.value
     });
+
+    await notebooksStore.reloadTree();
     
     router.push({ name: 'NoteDetails', params: { id: route.params.id } });
   } catch (err) {

@@ -1,6 +1,7 @@
 package io.github.jakmodz.backend.jwt;
 
 import io.github.jakmodz.backend.models.User;
+import io.github.jakmodz.backend.security.CustomUserDetails;
 import io.github.jakmodz.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,9 +25,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userService.getUserByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found: " + username);
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(), new ArrayList<>());
+
+        return new CustomUserDetails(user, new ArrayList<>());
     }
 }

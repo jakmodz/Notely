@@ -38,7 +38,6 @@ public class Notebook implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_notebook_id")
-    @JsonIgnore
     private Notebook parentNotebook;
 
     @CreationTimestamp

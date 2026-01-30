@@ -28,7 +28,6 @@ public class NotebookServiceImpl implements NotebookService {
     private final NoteRepository noteRepository;
 
     private final Logger logger = LoggerFactory.getLogger(NotebookServiceImpl.class);
-    //TODO: refactor circualar dependency between NoteService and NotebookService
     @Autowired
     public NotebookServiceImpl(NotebookRepository notebookRepository,NoteRepository noteRepository) {
         this.notebookRepository = notebookRepository;
